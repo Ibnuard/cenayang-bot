@@ -44,6 +44,12 @@ const onMessageReceived = async (client, message) => {
     case 'igstory':
       return command.downIGstory(client, message, value, extra_value);
       break;
+    case 'join':
+      return command.joinGroupPremium(client, message, value);
+      break;
+    case 'pList':
+      return command.premiumList(client, message);
+      break;
     default:
       return null;
       break;

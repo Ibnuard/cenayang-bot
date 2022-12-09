@@ -66,7 +66,7 @@ const listMenu = () => {
       temp + `\n# *${MENUS[i].category}* #\n\n${_splitMenu(MENUS[i].menu)}`;
   }
 
-  return prefix + temp;
+  return prefix + temp + endfix;
 };
 
 module.exports = {

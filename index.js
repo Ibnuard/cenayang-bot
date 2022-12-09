@@ -1,6 +1,8 @@
 const qrcode = require('qrcode-terminal');
-const {Client, LocalAuth} = require('whatsapp-web.js');
+const {Client, LocalAuth, ChatTypes} = require('whatsapp-web.js');
 const {handler} = require('./bin');
+const {leaveGroup, joinedPremiumGroup} = require('./func/group');
+const {cron} = require('./tools/cron');
 const client = new Client({
   //authStrategy: new LocalAuth(),
   puppeteer: {
@@ -17,6 +19,20 @@ client.on('qr', qr => {
 
 client.on('ready', () => {
   console.log('Client is ready!');
+
+  function _test() {
+    console.log('test called!');
+  }
+
+  //cron(_test);
+});
+
+client.on('group_join', async data => {
+  if (data.type !== 'invite') {
+    await leaveGroup(client, data);
+  } else {
+    await joinedPremiumGroup(client, data);
+  }
 });
 
 client.on('message', async message => {

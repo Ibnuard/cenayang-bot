@@ -1,12 +1,12 @@
-const fs = require('fs');
+const fs = require('fs-extra');
+const path = require('path');
 
 //path
-const premium = require('../database/group/premium.json');
 
-const getPathValue = path => {
-  switch (path) {
-    case 'premium':
-      return premium;
+const getPathValue = dir => {
+  switch (dir) {
+    case 'group_premium':
+      return './database/group/premium.json'; //path.resolve(__dirname, '../database/group/premium.json');
       break;
 
     default:
@@ -17,26 +17,24 @@ const getPathValue = path => {
 
 const saveData = async (path, value) => {
   const file = getPathValue(path);
-  await fs.readFile(file, function (err, data) {
-    if (!err) {
-      var json = JSON.parse(data);
-      json.push(value);
+  const existingData = loadData(path);
 
-      fs.writeFile(file, JSON.stringify(json));
-    } else {
-      console.log('save db error : ' + err);
-    }
-  });
+  existingData.push(value);
 
-  return;
+  const _encode = JSON.stringify(existingData);
+
+  fs.writeFileSync(file, _encode);
 };
 
 const loadData = path => {
-  fs.readFile(premium, function (err, data) {
-    var json = JSON.parse(data);
+  const file = getPathValue(path);
+  const data = fs.readFileSync(file);
 
-    return json;
-  });
+  const parsed = JSON.parse(data);
+
+  console.log('data : ' + parsed);
+
+  return parsed;
 };
 
 module.exports = {

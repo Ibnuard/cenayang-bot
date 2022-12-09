@@ -1,5 +1,6 @@
 const {MessageMedia} = require('whatsapp-web.js');
 const {downloader, genMenu, db} = require('../func');
+const config = require('../config.json');
 
 // ========================
 //
@@ -210,10 +211,33 @@ const downIGstory = async (client, message, value, extra) => {
 // ==================================================
 
 //kirim ping
-const addGroupPremium = async (client, message) => {
-  const word = 'Sukses menambahkan grup ke premium bos!';
-  await db.saveData('premium', message.from);
-  send(client, message, word);
+const joinGroupPremium = async (client, message, value) => {
+  const groupUrl = value;
+  const inviteCode = groupUrl.replace('https://chat.whatsapp.com/', '');
+
+  const owner = config.owner;
+
+  if (message.from == owner) {
+    try {
+      await client.acceptInvite(inviteCode);
+      send(client, message, 'Bos join grup sukses! misi selesai!');
+    } catch (e) {
+      send(client, message, 'Bos join grup gagal! misi gagal!');
+    }
+  } else {
+    send(
+      client,
+      message,
+      'Ga boleh nakal yaa, perintah ini hanya boleh dilakuin sama owner ganteng!!',
+    );
+  }
+
+  //db.saveData('premium', message.from);
+};
+
+//load data
+const premiumList = (client, message) => {
+  db.loadData('premium');
 };
 
 module.exports = {
@@ -227,5 +251,6 @@ module.exports = {
   downTik,
   downInsta,
   downIGstory,
-  addGroupPremium,
+  joinGroupPremium,
+  premiumList,
 };
