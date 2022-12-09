@@ -1,7 +1,7 @@
 {
   "name": "wa",
   "version": "1.0.0",
-  "description": "testing",
+  "description": "WA Super BOT",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
@@ -10,7 +10,14 @@
   "author": "ibnu putra",
   "license": "ISC",
   "dependencies": {
+    "axios": "^1.2.1",
+    "https-proxy-agent": "^5.0.1",
+    "md5": "^2.3.0",
     "qrcode-terminal": "^0.12.0",
-    "whatsapp-web.js": "^1.18.4"
+    "socks-proxy-agent": "^7.0.0",
+    "uuid": "^9.0.0",
+    "uuidv4": "^6.2.13",
+    "whatsapp-web.js": "^1.18.4",
+    "file-type": "^16.5.3"
   }
 }
