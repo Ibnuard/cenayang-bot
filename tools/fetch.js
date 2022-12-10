@@ -60,7 +60,6 @@ const uploadImages = (buffData, fileName) => {
     const filePath = `temp/${fileName}.${ext}`;
     fs.writeFile(filePath, buffData, {encoding: 'base64'}, err => {
       if (err) reject(err);
-      console.log('Uploading image to telegra.ph server...');
       const fileData = fs.readFileSync(filePath);
       const form = new FormData();
       form.append('file', fileData, `${fileName}.${ext}`);

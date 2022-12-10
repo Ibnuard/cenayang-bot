@@ -1,12 +1,15 @@
+const chalk = require('chalk');
 const qrcode = require('qrcode-terminal');
-const {Client, LocalAuth, ChatTypes} = require('whatsapp-web.js');
+const {Client, LocalAuth} = require('whatsapp-web.js');
 const {handler} = require('./bin');
 const {
   leaveGroup,
   joinedPremiumGroup,
   checkGroupStatus,
 } = require('./func/group');
-const {cron} = require('./tools/cron');
+const {job} = require('./tools');
+
+//CLIENT INIT
 const client = new Client({
   //authStrategy: new LocalAuth(),
   puppeteer: {
@@ -17,14 +20,16 @@ const client = new Client({
 });
 
 client.on('qr', qr => {
-  console.log('QR : ' + qr);
   qrcode.generate(qr, {small: true});
 });
 
 client.on('ready', () => {
-  console.log('Client is ready!');
+  console.log(chalk.green('Client is ready!'));
 
-  cron(() => checkGroupStatus(client), 600000, 'Check Group Premium Validity');
+  //GROUP CHECK
+  job.groupTask(() => checkGroupStatus(client)).start();
+
+  //cron(() => checkGroupStatus(client), 600000, 'Check Group Premium Validity');
 });
 
 client.on('group_join', async data => {

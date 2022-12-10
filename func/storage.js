@@ -8,7 +8,9 @@ const getPathValue = dir => {
     case 'group_premium':
       return './database/group/premium.json'; //path.resolve(__dirname, '../database/group/premium.json');
       break;
-
+    case 'reminder':
+      return './database/reminder/list.json'; //path.resolve(__dirname, '../database/group/premium.json');
+      break;
     default:
       return null;
       break;
@@ -20,6 +22,21 @@ const saveData = async (path, value) => {
   const existingData = loadData(path);
 
   existingData.push(value);
+
+  const _encode = JSON.stringify(existingData);
+
+  fs.writeFileSync(file, _encode);
+};
+
+const updateData = (path, data, key) => {
+  const file = getPathValue(path);
+  const existingData = loadData(path);
+
+  for (let i = 0; i < existingData.length; i++) {
+    if (existingData[i].id == data?.id) {
+      existingData[i][key] = data[key];
+    }
+  }
 
   const _encode = JSON.stringify(existingData);
 
@@ -38,4 +55,5 @@ const loadData = path => {
 module.exports = {
   saveData,
   loadData,
+  updateData,
 };

@@ -1,6 +1,8 @@
 const {db} = require('.');
+const {dLog} = require('../tools/log');
 const {getMoment, getMomentDiff} = require('../tools/moment');
-const {loadData} = require('./storage');
+const {loadData, updateData} = require('./storage');
+const moment = require('moment');
 
 const checkGroupStatus = async client => {
   const groupList = loadData('group_premium');
@@ -22,12 +24,12 @@ const checkGroupStatus = async client => {
   }
 
   if (groupList.length) {
-    console.log('grup premium -> ' + groupList.length);
+    dLog('GROUP_LIST', 'SYSTEM', false, groupList?.length);
     for (let i = 0; i < groupList.length; i++) {
       await _checkValidity(groupList[i].id, groupList[i].joinTime);
     }
   } else {
-    console.log('Belum ada grup premium');
+    dLog('GROUP_LIST', 'SYSTEM', false, 'NO GROUP LIST');
   }
 };
 
@@ -48,17 +50,59 @@ const leaveGroup = async (client, group) => {
 };
 
 const joinedPremiumGroup = async (client, group) => {
+  dLog('GROUP', 'SYSTEM', false, 'GROUP ID : ' + group.chatId);
   const data = {
     id: group?.chatId,
     joinTime: getMoment(),
   };
 
-  db.saveData('group_premium', data);
+  const existingData = loadData('group_premium');
+  const expiredDate = moment().add(30, 'days');
 
-  await client.sendMessage(
-    group?.chatId,
-    'Halo Gaes David Disini...\nEh maaf salah intro hihi🤭\n\nHalo Everyone! 👋\nKenalin, aku gedang.\n\nNote:\nJangan call abang yaa, otomatis abang block nanti! 🚫\n\nSelain (/) abang juga akan merespon simbol berikut : \n/ ! $ . ,\n\nAbang juga jago matematika loh, kalian bisa gunakan prefix (=)\ncontoh: =10+2+4\n\nKalian bisa lakukan perintah *!menu* untuk menampilkan menu yang tersedia.\n\nTerima kasih sudah mau menggunakan bot pintar nan ganteng ini. ✨\n\nKalo kalian merasa bot ini berguna silahkan berdonasi yaa, kasihan soalnya ownernya sobat misqueen ga bisa bayar server huhu 🙈\n\nHowever literally ayo nyerah jangan semangat 🐣\nHave a bad dayy 🌧\n\nMaaciww...',
-  );
+  if (existingData.length > 0) {
+    const find = existingData.filter((item, index) => {
+      return item.id == group.chatId;
+    });
+
+    if (find.length > 0) {
+      dLog('GROUP', 'SYSTEM', false, 'JOIN EXISTIING PREMIUM GROUP');
+      updateData('group_premium', data, 'joinTime');
+
+      await client.sendMessage(
+        group?.chatId,
+        'Halo Gaes David Disini...\nEh maaf salah intro hihi🤭\n\nHalo Everyone! 👋\nKenalin, aku gedang.\n\nNote:\nJangan call abang yaa, otomatis abang block nanti! 🚫\n\nSelain (/) abang juga akan merespon simbol berikut : \n/ ! $ . ,\n\nAbang juga jago matematika loh, kalian bisa gunakan prefix (=)\ncontoh: =10+2+4\n\nKalian bisa lakukan perintah *!menu* untuk menampilkan menu yang tersedia.\n\nTerima kasih sudah mau menggunakan bot pintar nan ganteng ini. ✨\n\nKalo kalian merasa bot ini berguna silahkan berdonasi yaa, kasihan soalnya ownernya sobat misqueen ga bisa bayar server huhu 🙈\n\nHowever literally ayo nyerah jangan semangat 🐣\nHave a bad dayy 🌧\n\nMaaciww...',
+      );
+      await client.sendMessage(
+        group?.chatId,
+        `BOT akan otomatis keluar pada ${moment(expiredDate).format('LL')}`,
+      );
+    } else {
+      dLog('GROUP', 'SYSTEM', false, 'JOIN NEW PREMIUM GROUP');
+
+      db.saveData('group_premium', data);
+
+      await client.sendMessage(
+        group?.chatId,
+        'Halo Gaes David Disini...\nEh maaf salah intro hihi🤭\n\nHalo Everyone! 👋\nKenalin, aku gedang.\n\nNote:\nJangan call abang yaa, otomatis abang block nanti! 🚫\n\nSelain (/) abang juga akan merespon simbol berikut : \n/ ! $ . ,\n\nAbang juga jago matematika loh, kalian bisa gunakan prefix (=)\ncontoh: =10+2+4\n\nKalian bisa lakukan perintah *!menu* untuk menampilkan menu yang tersedia.\n\nTerima kasih sudah mau menggunakan bot pintar nan ganteng ini. ✨\n\nKalo kalian merasa bot ini berguna silahkan berdonasi yaa, kasihan soalnya ownernya sobat misqueen ga bisa bayar server huhu 🙈\n\nHowever literally ayo nyerah jangan semangat 🐣\nHave a bad dayy 🌧\n\nMaaciww...',
+      );
+      await client.sendMessage(
+        group?.chatId,
+        `BOT akan otomatis keluar pada ${moment(expiredDate).format('LL')}`,
+      );
+    }
+  } else {
+    dLog('GROUP', 'SYSTEM', false, 'FIRST PREMIUM GROUP');
+    db.saveData('group_premium', data);
+
+    await client.sendMessage(
+      group?.chatId,
+      'Halo Gaes David Disini...\nEh maaf salah intro hihi🤭\n\nHalo Everyone! 👋\nKenalin, aku gedang.\n\nNote:\nJangan call abang yaa, otomatis abang block nanti! 🚫\n\nSelain (/) abang juga akan merespon simbol berikut : \n/ ! $ . ,\n\nAbang juga jago matematika loh, kalian bisa gunakan prefix (=)\ncontoh: =10+2+4\n\nKalian bisa lakukan perintah *!menu* untuk menampilkan menu yang tersedia.\n\nTerima kasih sudah mau menggunakan bot pintar nan ganteng ini. ✨\n\nKalo kalian merasa bot ini berguna silahkan berdonasi yaa, kasihan soalnya ownernya sobat misqueen ga bisa bayar server huhu 🙈\n\nHowever literally ayo nyerah jangan semangat 🐣\nHave a bad dayy 🌧\n\nMaaciww...',
+    );
+    await client.sendMessage(
+      group?.chatId,
+      `BOT akan otomatis keluar pada ${moment(expiredDate).format('LL')}`,
+    );
+  }
 };
 
 module.exports = {

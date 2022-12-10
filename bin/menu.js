@@ -1,6 +1,7 @@
 //const {owner, menu, sticker, downFB, ping} = require('./command');
 
 const {command} = require('.');
+const {dLog} = require('../tools/log');
 
 const onMessageReceived = async (client, message) => {
   // ex, format !sticker
@@ -14,16 +15,20 @@ const onMessageReceived = async (client, message) => {
   const value = getMessage.replace(getMessage.split(' ')[0], '').trimStart();
   const extra_value = value.split(' '); //extra_value[0] extra_value[1]
 
-  console.log(`from ${message?.from} -> ${cmd} -> ${value} ${extra_value}`);
+  //console.log(`from ${message?.from} -> ${cmd} -> ${value} ${extra_value}`);
+  dLog(cmd, message.from, false, `${value} || ${extra_value}`);
 
   if (prefix == '=') {
-    console.log('calculator');
+    dLog('CALCULATOR', message.from, false, getMessage);
     return command.hitung(client, message, getMessage);
   }
 
   switch (cmd) {
     case 'ping':
       return command.ping(client, message);
+      break;
+    case 'donasi':
+      return command.donasi(client, message);
       break;
     case 'owner':
       return command.owner(client, message);
@@ -40,16 +45,31 @@ const onMessageReceived = async (client, message) => {
     case 'fb':
       return command.downFB(client, message, value);
       break;
+    case 'facebook':
+      return command.downFB(client, message, value);
+      break;
     case 'tt':
       return command.downTik(client, message, value);
       break;
+    case 'tiktok':
+      return command.downTik(client, message, value);
+      break;
     case 'ig':
+      return command.downInsta(client, message, value);
+      break;
+    case 'instagram':
       return command.downInsta(client, message, value);
       break;
     case 'igs':
       return command.downIGstory(client, message, value, extra_value);
       break;
     case 'ytmp4':
+      return command.downYT(client, message, 'vi', value);
+      break;
+    case 'yt':
+      return command.downYT(client, message, 'vi', value);
+      break;
+    case 'youtube':
       return command.downYT(client, message, 'vi', value);
       break;
     case 'ytmp3':
@@ -97,13 +117,15 @@ const onMessageReceived = async (client, message) => {
     case 'resep':
       return command.resep(client, message, value);
       break;
+    case 'ingetin':
+      return command.ingetin(client, message, value);
+      break;
     case 'join':
       return command.joinGroupPremium(client, message, value);
       break;
     case 'pList':
       return command.premiumList(client, message);
       break;
-    default:
       return null;
       break;
   }

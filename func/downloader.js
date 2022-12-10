@@ -8,7 +8,6 @@ const config = require('../config.json');
  */
 const insta = url =>
   new Promise((resolve, reject) => {
-    console.log(`Get Instagram media from ${url}`);
     fetchJson(
       `https://api.vhtear.com/instadl?link=${url}&apikey=${config.vhtear}`,
       {
@@ -26,7 +25,6 @@ const insta = url =>
  */
 const instaStory = username =>
   new Promise((resolve, reject) => {
-    console.log(`Get Instagram media from ${username}`);
     fetchJson(
       `https://api.vhtear.com/igstory?query=${username}&apikey=${config.vhtear}`,
       {
@@ -44,7 +42,6 @@ const instaStory = username =>
  */
 const tik = url =>
   new Promise((resolve, reject) => {
-    console.log(`Get TikTok media from ${url}`);
     fetchJson(
       `https://api.vhtear.com/tiktokdl?link=${url}&apikey=${config.vhtear}`,
     )
@@ -59,7 +56,6 @@ const tik = url =>
  */
 const fb = url =>
   new Promise((resolve, reject) => {
-    console.log(`Get Facebook media from ${url}`);
     fetchJson(`https://api.vhtear.com/fbdl?link=${url}&apikey=${config.vhtear}`)
       .then(result => resolve(result))
       .catch(err => reject(err));
@@ -72,7 +68,6 @@ const fb = url =>
  */
 const ytdl = url =>
   new Promise((resolve, reject) => {
-    console.log(`Get YouTube media from ${url}`);
     fetchJson(`https://api.vhtear.com/ytdl?link=${url}&apikey=${config.vhtear}`)
       .then(result => resolve(result))
       .catch(err => reject(err));
@@ -85,7 +80,6 @@ const ytdl = url =>
  */
 const tikNoWm = url =>
   new Promise((resolve, reject) => {
-    console.log(`Get TikTok with no WM from ${url}`);
     fetchJson(`https://videfikri.com/api/tiktok/?url=${url}`)
       .then(result => resolve(result))
       .catch(err => reject(err));
@@ -98,7 +92,6 @@ const tikNoWm = url =>
  */
 const pinterest = url =>
   new Promise((resolve, reject) => {
-    console.log(`Get TikTok with no WM from ${url}`);
     fetchJson(
       `https://api.vhtear.com/pinterestdl?link=${url}&apikey=${config.vhtear}`,
     )

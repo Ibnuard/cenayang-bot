@@ -1,6 +1,7 @@
 const {MessageMedia} = require('whatsapp-web.js');
-const {downloader, genMenu, db, text, art, misc} = require('../func');
+const {downloader, genMenu, db, text, art, misc, reminder} = require('../func');
 const config = require('../config.json');
+const {dLog} = require('../tools/log');
 
 // ========================
 //
@@ -39,6 +40,12 @@ const owner = (client, message) => {
   send(client, message, word);
 };
 
+const donasi = (client, message) => {
+  const word =
+    'Halo Gaes untuk kalian yang mau donasi / menambahkan bot ini ke grup kalian bisa kirim lewat aplikasi berikut ya : \n\n*OVO : 085741894533*\n*DANA : 085741894533*\n\nAtau kalian bisa hubungin telegram owner ya.\nDonasi kalian sangat membantu untuk biaya server, maklum ownernya sobat misqueen hihi.\n\nHave nice yayyyy!!\nTerima kasih.';
+  send(client, message, word);
+};
+
 //menu
 const menu = (client, message) => {
   const word = genMenu.listMenu();
@@ -55,7 +62,7 @@ const sticker = async (client, message) => {
       send(client, message, media, {sendMediaAsSticker: true});
     }
   } else {
-    console.log('Ga ada medianya...');
+    dLog('STICKER', message.from, true, 'NO MEDIA DETECTED');
     const word =
       'Tidak ada gambar untuk dijadikan sticker, pilih gambar lalu tambahkan pesan !jadianime';
     reply(message, word);
@@ -64,20 +71,20 @@ const sticker = async (client, message) => {
 
 //download video fb
 const downFB = async (client, message, value) => {
-  reply(message, 'Videonya lagi di download bentar yaaww...');
   if (value) {
+    reply(message, 'Videonya lagi di download bentar yaaww...');
     downloader
       .fb(value)
       .then(async ({result}) => {
-        const video = result?.VideoUrl;
+        const video = await result?.VideoUrl;
         const media = await MessageMedia.fromUrl(video, {
           unsafeMime: true,
           filename: 'video.mp4',
         });
-        send(client, message, media);
+        await send(client, message, media, {sendMediaAsDocument: true});
       })
       .catch(err => {
-        console.log(err);
+        dLog('FACEBOOK', message.from, true, 'ERR : ' + err);
         send(
           client,
           message,
@@ -95,19 +102,20 @@ const downFB = async (client, message, value) => {
 
 //download tiktok wm
 const downTik = async (client, message, value) => {
-  reply(message, 'Videonya lagi di download bentar yaaww...');
   if (value) {
+    reply(message, 'Videonya lagi di download bentar yaaww...');
     downloader
       .tik(value)
       .then(async ({result}) => {
         const video = result?.video;
         const media = await MessageMedia.fromUrl(video, {
+          filename: 'tiktok.mp4',
           unsafeMime: true,
         });
-        send(client, message, media);
+        send(client, message, media, {sendMediaAsDocument: true});
       })
       .catch(err => {
-        console.log(err);
+        dLog('TIKTOK', message.from, true, 'ERR : ' + err);
         send(
           client,
           message,
@@ -121,12 +129,11 @@ const downTik = async (client, message, value) => {
 
 //download tiktok wm
 const downInsta = async (client, message, value) => {
-  reply(message, 'Postingan/Reelsnya lagi di download bentar yaaww...');
   if (value) {
+    reply(message, 'Postingan/Reelsnya lagi di download bentar yaaww...');
     downloader
       .insta(value)
       .then(async ({result}) => {
-        console.log('result : ' + JSON.stringify(result));
         if (result) {
           for (let i = 0; i < result?.post?.length; i++) {
             const video = result.post[i].urlDownload;
@@ -136,18 +143,18 @@ const downInsta = async (client, message, value) => {
                 result.post[i].type == 'image' ? 'jpeg' : 'mp4'
               }`,
             });
-            send(client, message, media);
+            send(client, message, media, {sendMediaAsDocument: true});
           }
         } else {
           send(
             client,
             message,
-            '_Postingan/reels tidak ada atau akun di privat!_',
+            '_Server down | Postingan/reels tidak ada atau akun di privat!_',
           );
         }
       })
       .catch(err => {
-        console.log('ig : ' + err);
+        dLog('IG', message.from, true, 'ERR : ' + err);
         send(
           client,
           message,
@@ -161,11 +168,11 @@ const downInsta = async (client, message, value) => {
 
 //download tiktok wm
 const downIGstory = async (client, message, value, extra) => {
-  reply(
-    message,
-    'Storynya lagi di download bentar yaaww...\n gunakan perintah _!igs usernameIg_ untuk mendownload semua story yang ada.',
-  );
   if (value) {
+    reply(
+      message,
+      'Storynya lagi di download bentar yaaww...\n gunakan perintah _!igs usernameIg_ untuk mendownload semua story yang ada.',
+    );
     downloader
       .instaStory(extra.length > 1 ? extra[0] : value)
       .then(async ({result}) => {
@@ -178,7 +185,7 @@ const downIGstory = async (client, message, value, extra) => {
                 result.story?.itemlist[extra]?.type == 'video' ? 'mp4' : 'jpeg'
               }`,
             });
-            send(client, message, media);
+            send(client, message, media, {sendMediaAsDocument: true});
           } else {
             for (let i = 0; i < result.story.itemlist.length; i++) {
               const video = result.story?.itemlist[i]?.urlDownload;
@@ -190,15 +197,19 @@ const downIGstory = async (client, message, value, extra) => {
                     : 'jpeg'
                 }`,
               });
-              send(client, message, media);
+              send(client, message, media, {sendMediaAsDocument: true});
             }
           }
         } else {
-          send(client, message, '_Story tidak ada atau akun di privat!_');
+          send(
+            client,
+            message,
+            '_Server down | Story tidak ada atau akun di privat!_',
+          );
         }
       })
       .catch(err => {
-        console.log('igs : ' + err);
+        dLog('IGS', message.from, true, 'ERR : ' + err);
         send(
           client,
           message,
@@ -212,27 +223,27 @@ const downIGstory = async (client, message, value, extra) => {
 
 //download youtube
 const downYT = async (client, message, type, value) => {
-  reply(
-    message,
-    `${
-      type == 'au' ? 'Audionya' : 'Videonya'
-    } lagi di download bentar yaaww...`,
-  );
   if (value) {
+    reply(
+      message,
+      `${
+        type == 'au' ? 'Audionya' : 'Videonya'
+      } lagi di download bentar yaaww...`,
+    );
     downloader
       .ytdl(value)
       .then(async ({result}) => {
-        const video = result?.UrlVideo;
-        const audio = result?.UrlMp3;
+        const video = await result?.UrlVideo;
+        const audio = await result?.UrlMp3;
 
         const media = await MessageMedia.fromUrl(type == 'au' ? audio : video, {
           unsafeMime: true,
           filename: `${result.title}.${type == 'au' ? 'mp3' : 'mp4'}`,
         });
-        send(client, message, media);
+        await send(client, message, media, {sendMediaAsDocument: true});
       })
       .catch(err => {
-        console.log(err);
+        dLog('YOUTUBE', message.from, true, 'ERR : ' + err);
         send(
           client,
           message,
@@ -246,8 +257,8 @@ const downYT = async (client, message, type, value) => {
 
 //teks ke gif
 const txToGif = async (client, message, value) => {
-  reply(message, 'Lagi di proses yaw...');
   if (value) {
+    reply(message, 'Lagi di proses yaw...');
     const url = text.textToGif(value);
     const media = await MessageMedia.fromUrl(url, {
       unsafeMime: true,
@@ -261,8 +272,8 @@ const txToGif = async (client, message, value) => {
 
 //teks ke nulis
 const txToNulis = async (client, message, value) => {
-  reply(message, 'Lagi di proses yaw...');
   if (value) {
+    reply(message, 'Lagi di proses yaw...');
     const url = text.nulis(value);
     const media = await MessageMedia.fromUrl(url, {
       unsafeMime: true,
@@ -275,8 +286,8 @@ const txToNulis = async (client, message, value) => {
 
 //teks ke nulis
 const txToQR = async (client, message, value) => {
-  reply(message, 'Lagi di proses yaw...');
   if (value) {
+    reply(message, 'Lagi di proses yaw...');
     const url = text.qrcode(value);
     const media = await MessageMedia.fromUrl(url, {
       unsafeMime: true,
@@ -289,8 +300,8 @@ const txToQR = async (client, message, value) => {
 
 //teks ke nulis
 const txToHartaTahta = async (client, message, value) => {
-  reply(message, 'Lagi di proses yaw...');
   if (value) {
+    reply(message, 'Lagi di proses yaw...');
     const url = text.hartatahta(value);
     const media = await MessageMedia.fromUrl(url, {
       unsafeMime: true,
@@ -303,8 +314,8 @@ const txToHartaTahta = async (client, message, value) => {
 
 //teks ke nulis
 const ssWeb = async (client, message, value) => {
-  reply(message, 'Lagi di proses yaw...');
   if (value) {
+    reply(message, 'Lagi di proses yaw...');
     const url = misc.ssWeb(value);
     const media = await MessageMedia.fromUrl(url, {
       unsafeMime: true,
@@ -327,8 +338,8 @@ const puisi = async (client, message) => {
 
 //teks ke logo esports
 const txToLogoEsp = async (client, message, value) => {
-  reply(message, 'Lagi di proses yaw...');
   if (value) {
+    reply(message, 'Lagi di proses yaw...');
     const url = text.logoEsp(value);
     const media = await MessageMedia.fromUrl(url, {
       unsafeMime: true,
@@ -341,8 +352,8 @@ const txToLogoEsp = async (client, message, value) => {
 
 //teks ke gif
 const txToPhub = async (client, message, value, extra) => {
-  reply(message, 'Lagi di proses yaw...');
   if (extra) {
+    reply(message, 'Lagi di proses yaw...');
     const url = text.pHub(extra[0], extra[1]);
     const media = await MessageMedia.fromUrl(url, {
       unsafeMime: true,
@@ -355,8 +366,8 @@ const txToPhub = async (client, message, value, extra) => {
 
 //chord
 const chord = async (client, message, value) => {
-  reply(message, 'Lagi nyari lagunya bentar yaw...');
   if (value) {
+    reply(message, 'Lagi nyari lagunya bentar yaw...');
     art
       .chord(value)
       .then(async ({result}) => {
@@ -371,7 +382,7 @@ const chord = async (client, message, value) => {
         }
       })
       .catch(err => {
-        console.log(err);
+        dLog('CHORD', message.from, true, 'ERR : ' + err);
         send(
           client,
           message,
@@ -385,8 +396,8 @@ const chord = async (client, message, value) => {
 
 //chord
 const lirik = async (client, message, value) => {
-  reply(message, 'Lagi nyari lagunya bentar yaw...');
   if (value) {
+    reply(message, 'Lagi nyari lagunya bentar yaw...');
     art
       .lirik(value)
       .then(async ({result}) => {
@@ -401,7 +412,7 @@ const lirik = async (client, message, value) => {
         }
       })
       .catch(err => {
-        console.log(err);
+        dLog('LIRIK', message.from, true, 'ERR : ' + err);
         send(
           client,
           message,
@@ -424,7 +435,7 @@ const hitung = async (client, message, value) => {
         }
       })
       .catch(err => {
-        console.log(err);
+        dLog('CALCULATOR', message.from, true, 'ERR : ' + err);
         send(client, message, '_Ada masalah nih, mohon coba lagi ya!_');
       });
   } else {
@@ -444,7 +455,7 @@ const gempa = async (client, message) => {
       }
     })
     .catch(err => {
-      console.log(err);
+      dLog('GEMPA', message.from, true, 'ERR : ' + err);
       send(client, message, '_Ada masalah nih, mohon coba lagi ya!_');
     });
 };
@@ -458,7 +469,7 @@ const pantun = async (client, message) => {
       }
     })
     .catch(err => {
-      console.log(err);
+      dLog('PANTUN', message.from, true, 'ERR : ' + err);
       send(client, message, '_Ada masalah nih, mohon coba lagi ya!_');
     });
 };
@@ -472,15 +483,14 @@ const quotes = async (client, message) => {
       }
     })
     .catch(err => {
-      console.log(err);
+      dLog('QUOTES', message.from, true, 'ERR : ' + err);
       send(client, message, '_Ada masalah nih, mohon coba lagi ya!_');
     });
 };
 
 const resep = async (client, message, value) => {
-  reply(message, 'Bentar yaaa mas bot yang ganteng lagi cari resepnya');
-
   if (value) {
+    reply(message, 'Bentar yaaa mas bot yang ganteng lagi cari resepnya');
     misc
       .resep(value)
       .then(async ({result}) => {
@@ -494,7 +504,7 @@ const resep = async (client, message, value) => {
         }
       })
       .catch(err => {
-        console.log(err);
+        dLog('RESEP', message.from, true, 'ERR : ' + err);
         send(
           client,
           message,
@@ -503,6 +513,37 @@ const resep = async (client, message, value) => {
       });
   } else {
     send(client, message, 'Cara penggunaan : _!resep rawon_');
+  }
+};
+
+//kirim ping
+const ingetin = (client, message, value) => {
+  const word =
+    'Cara penggunaan ingetin : \n\nBedasarkan tanggal:\n\n _!ingetin [tanggal/bulan/tahun/jam/menit] ingetin makan_  \n\ndeskripsi -> bakal kirim chat sesuai pada tanggal yang diatur\n\nRelative: \n\n_!ingetin [besok/lusa] ulang tahun emak_ \n\ndeskripsi -> bakal kirim chat besok atau lusa\n\nHari ini: \n\n_!ingetin [harini/13/00] sholat_\n\ndeskripsi -> bakal kirim chat hari ini di jam/menit yang telah diatur';
+  if (value) {
+    if (value == 'list') {
+      const result = reminder.reminderList(message.from);
+      if (result == 'NO_DATA') {
+        reply(message, 'Belum ada peningat dibuat!');
+      } else {
+        reply(message, result);
+      }
+    } else {
+      const remind = reminder.handleReminder(client, message, value);
+      if (remind.time) {
+        reply(
+          message,
+          `Pengingat udah diatur di ${remind.time}, nanti aku ingetin yawww...!\n\nGunakan perintah _!ingetin list_ untuk melihat semua pengingat yang dibuat.`,
+        );
+      } else {
+        reply(
+          message,
+          `Format perintah salah yaww, kalian bisa gunakan perintah _!ingetin_ untuk lihat formatnya.`,
+        );
+      }
+    }
+  } else {
+    reply(message, word);
   }
 };
 
@@ -573,4 +614,6 @@ module.exports = {
   pantun,
   quotes,
   resep,
+  donasi,
+  ingetin,
 };

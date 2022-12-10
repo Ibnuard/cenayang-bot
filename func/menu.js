@@ -7,6 +7,10 @@ const MENUS = [
         desc: 'Mengetahui status bot',
       },
       {
+        cmd: '!donasi',
+        desc: 'Mengetahui info donasi',
+      },
+      {
         cmd: '!owner',
         desc: 'Mengetahui info owner',
       },
@@ -18,6 +22,15 @@ const MENUS = [
       {
         cmd: '!sticker',
         desc: 'Membuat sticker dari gambar',
+      },
+    ],
+  },
+  {
+    category: 'Automation dan Kegunaan',
+    menu: [
+      {
+        cmd: '!ingetin',
+        desc: 'Membuat reminder atau pengingat',
       },
     ],
   },
