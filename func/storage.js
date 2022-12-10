@@ -32,8 +32,6 @@ const loadData = path => {
 
   const parsed = JSON.parse(data);
 
-  console.log('data : ' + parsed);
-
   return parsed;
 };
 

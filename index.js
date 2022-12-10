@@ -1,7 +1,11 @@
 const qrcode = require('qrcode-terminal');
 const {Client, LocalAuth, ChatTypes} = require('whatsapp-web.js');
 const {handler} = require('./bin');
-const {leaveGroup, joinedPremiumGroup} = require('./func/group');
+const {
+  leaveGroup,
+  joinedPremiumGroup,
+  checkGroupStatus,
+} = require('./func/group');
 const {cron} = require('./tools/cron');
 const client = new Client({
   //authStrategy: new LocalAuth(),
@@ -20,11 +24,7 @@ client.on('qr', qr => {
 client.on('ready', () => {
   console.log('Client is ready!');
 
-  function _test() {
-    console.log('test called!');
-  }
-
-  //cron(_test);
+  cron(() => checkGroupStatus(client), 600000, 'Check Group Premium Validity');
 });
 
 client.on('group_join', async data => {

@@ -11,10 +11,15 @@ const onMessageReceived = async (client, message) => {
     : '-';
 
   const cmd = getMessage.split(' ')[0].replace(prefix, '');
-  const value = getMessage.split(' ')[1];
-  const extra_value = getMessage.split(' ')[2] ?? '';
+  const value = getMessage.replace(getMessage.split(' ')[0], '').trimStart();
+  const extra_value = value.split(' '); //extra_value[0] extra_value[1]
 
-  console.log(`perintah diterima dari ${message?.from} -> ${cmd}`);
+  console.log(`from ${message?.from} -> ${cmd} -> ${value} ${extra_value}`);
+
+  if (prefix == '=') {
+    console.log('calculator');
+    return command.hitung(client, message, getMessage);
+  }
 
   switch (cmd) {
     case 'ping':
@@ -32,17 +37,65 @@ const onMessageReceived = async (client, message) => {
     case 'menu':
       return command.menu(client, message);
       break;
-    case 'facebook':
+    case 'fb':
       return command.downFB(client, message, value);
       break;
-    case 'tiktok':
+    case 'tt':
       return command.downTik(client, message, value);
       break;
-    case 'instagram':
+    case 'ig':
       return command.downInsta(client, message, value);
       break;
-    case 'igstory':
+    case 'igs':
       return command.downIGstory(client, message, value, extra_value);
+      break;
+    case 'ytmp4':
+      return command.downYT(client, message, 'vi', value);
+      break;
+    case 'ytmp3':
+      return command.downYT(client, message, 'au', value);
+      break;
+    case 'text2gif':
+      return command.txToGif(client, message, value);
+      break;
+    case 'nulis':
+      return command.txToNulis(client, message, value);
+      break;
+    case 'logo':
+      return command.txToLogoEsp(client, message, value);
+      break;
+    case 'logoPhub':
+      return command.txToPhub(client, message, value, extra_value);
+      break;
+    case 'chord':
+      return command.chord(client, message, value);
+      break;
+    case 'lirik':
+      return command.lirik(client, message, value);
+      break;
+    case 'buatqr':
+      return command.txToQR(client, message, value);
+      break;
+    case 'hartatahta':
+      return command.txToHartaTahta(client, message, value);
+      break;
+    case 'ssweb':
+      return command.ssWeb(client, message, value);
+      break;
+    case 'puisi':
+      return command.puisi(client, message);
+      break;
+    case 'gempa':
+      return command.gempa(client, message);
+      break;
+    case 'pantun':
+      return command.pantun(client, message);
+      break;
+    case 'quotes':
+      return command.quotes(client, message);
+      break;
+    case 'resep':
+      return command.resep(client, message, value);
       break;
     case 'join':
       return command.joinGroupPremium(client, message, value);

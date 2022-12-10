@@ -1,21 +1,33 @@
 const {db} = require('.');
-const {getMoment} = require('../tools/moment');
+const {getMoment, getMomentDiff} = require('../tools/moment');
 const {loadData} = require('./storage');
 
-const checkGroupStatus = id => {
+const checkGroupStatus = async client => {
   const groupList = loadData('group_premium');
 
-  if (groupList.length) {
-    const find = groupList.filter((item, index) => {
-      return item?.id == id;
-    });
+  async function _checkValidity(id, time) {
+    const valid = getMomentDiff(time, 'hours');
 
-    //check time
-    if (find.length > 0) {
-      return true;
+    if (valid > 3) {
+      const grup = await client.getChatById(id);
+      await client.sendMessage(
+        id,
+        'Halo gaes..\nGedang leave dari grup ya soalnya masa berlakunya udah habis huhuu\n\nKalian bisa hubungin admin yaa untuk pake bot ini lagi\n\nMaaciww.. See u...',
+      );
+
+      setTimeout(async () => {
+        await grup.leave();
+      }, 2000);
+    }
+  }
+
+  if (groupList.length) {
+    console.log('grup premium -> ' + groupList.length);
+    for (let i = 0; i < groupList.length; i++) {
+      await _checkValidity(groupList[i].id, groupList[i].joinTime);
     }
   } else {
-    return false;
+    console.log('Belum ada grup premium');
   }
 };
 

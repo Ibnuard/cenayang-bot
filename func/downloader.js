@@ -91,6 +91,21 @@ const tikNoWm = url =>
       .catch(err => reject(err));
   });
 
+/**
+ * Get Pinterest
+ * @param {string} url
+ * @returns {Promise<object>}
+ */
+const pinterest = url =>
+  new Promise((resolve, reject) => {
+    console.log(`Get TikTok with no WM from ${url}`);
+    fetchJson(
+      `https://api.vhtear.com/pinterestdl?link=${url}&apikey=${config.vhtear}`,
+    )
+      .then(result => resolve(result))
+      .catch(err => reject(err));
+  });
+
 module.exports = {
   fb,
   ytdl,
