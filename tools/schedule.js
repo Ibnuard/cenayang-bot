@@ -17,7 +17,17 @@ const reminderTask = func => {
   });
 };
 
+//BOT JOB
+//reminder cron
+const botTask = func => {
+  return cron.schedule('0 0 */12 * * *', () => {
+    dLog('JOB', 'SYSTEM', false, 'RUNNING BOT TASK EEVRY 12 HOURS');
+    func();
+  });
+};
+
 module.exports = {
   groupTask,
   reminderTask,
+  botTask,
 };

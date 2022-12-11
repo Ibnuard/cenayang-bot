@@ -10,9 +10,11 @@
   "author": "ibnu putra",
   "license": "ISC",
   "dependencies": {
+    "await-exec": "^0.1.2",
     "axios": "^1.2.1",
     "chalk": "^4.1.1",
     "file-type": "^16.5.3",
+    "fluent-ffmpeg": "^2.1.2",
     "fs-extra": "^10.0.0",
     "https-proxy-agent": "^5.0.1",
     "md5": "^2.3.0",

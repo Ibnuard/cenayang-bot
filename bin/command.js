@@ -3,6 +3,7 @@ const {downloader, genMenu, db, text, art, misc, reminder} = require('../func');
 const config = require('../config.json');
 const {dLog} = require('../tools/log');
 const moment = require('moment');
+const {msg} = require('./messages');
 moment.locale('id');
 
 // ========================
@@ -31,8 +32,7 @@ const send = (client, message, reply, ops) => {
 
 //kirim ping
 const ping = (client, message) => {
-  const word =
-    'Halo Gaes David Disini...\nEh maaf salah intro hihi🤭\n\nHalo Everyone! 👋\nKenalin, aku gedang.\n\nNote:\nJangan call abang yaa, otomatis abang block nanti! 🚫\n\nSelain (/) abang juga akan merespon simbol berikut : \n/ ! $ . ,\n\nAbang juga jago matematika loh, kalian bisa gunakan prefix (=)\ncontoh: =10+2+4\n\nKalian bisa lakukan perintah *!menu* untuk menampilkan menu yang tersedia.\n\nTerima kasih sudah mau menggunakan bot pintar nan ganteng ini. ✨\n\nKalo kalian merasa bot ini berguna silahkan berdonasi yaa, kasihan soalnya ownernya sobat misqueen ga bisa bayar server huhu 🙈\n\nHowever literally ayo nyerah jangan semangat 🐣\nHave a bad dayy 🌧\n\nMaaciww...';
+  const word = msg.success.greeting;
   send(client, message, word);
 };
 
@@ -56,25 +56,42 @@ const menu = (client, message) => {
 
 //buat sticker
 const sticker = async (client, message) => {
-  if (message.hasMedia) {
-    const media = await message.downloadMedia();
-    reply(message, 'Sticker lagi otw dibikin yaa...');
+  if (message.hasQuotedMsg) {
+    const qMsg = await message.getQuotedMessage();
+    if (qMsg.hasMedia) {
+      const media = await qMsg.downloadMedia();
+      reply(qMsg, msg.wait);
 
-    if (media) {
-      send(client, message, media, {sendMediaAsSticker: true});
+      if (media) {
+        send(client, qMsg, media, {sendMediaAsSticker: true});
+      }
+    } else {
+      dLog('STICKER', message.from, true, 'NO MEDIA DETECTED');
+      const word =
+        'Tidak ada gambar/video/gif untuk dijadikan sticker, pilih gambar lalu tambahkan pesan !sticker';
+      reply(message, word);
     }
   } else {
-    dLog('STICKER', message.from, true, 'NO MEDIA DETECTED');
-    const word =
-      'Tidak ada gambar untuk dijadikan sticker, pilih gambar lalu tambahkan pesan !jadianime';
-    reply(message, word);
+    if (message.hasMedia) {
+      const media = await message.downloadMedia();
+      reply(message, msg.wait);
+
+      if (media) {
+        send(client, message, media, {sendMediaAsSticker: true});
+      }
+    } else {
+      dLog('STICKER', message.from, true, 'NO MEDIA DETECTED');
+      const word =
+        'Tidak ada gambar/video/gif untuk dijadikan sticker, pilih gambar lalu tambahkan pesan !sticker';
+      reply(message, word);
+    }
   }
 };
 
 //download video fb
 const downFB = async (client, message, value) => {
   if (value) {
-    reply(message, 'Videonya lagi di download bentar yaaww...');
+    reply(message, msg.wait);
     downloader
       .fb(value)
       .then(async ({result}) => {
@@ -87,11 +104,7 @@ const downFB = async (client, message, value) => {
       })
       .catch(err => {
         dLog('FACEBOOK', message.from, true, 'ERR : ' + err);
-        send(
-          client,
-          message,
-          '_Ada masalah nih, coba cek linknya ya atau coba lagi!_',
-        );
+        send(client, message, msg.error.norm);
       });
   } else {
     send(
@@ -105,7 +118,7 @@ const downFB = async (client, message, value) => {
 //download tiktok wm
 const downTik = async (client, message, value) => {
   if (value) {
-    reply(message, 'Videonya lagi di download bentar yaaww...');
+    reply(message, msg.wait);
     downloader
       .tik(value)
       .then(async ({result}) => {
@@ -118,11 +131,7 @@ const downTik = async (client, message, value) => {
       })
       .catch(err => {
         dLog('TIKTOK', message.from, true, 'ERR : ' + err);
-        send(
-          client,
-          message,
-          '_Ada masalah nih, coba cek linknya ya atau coba lagi!_',
-        );
+        send(client, message, msg.error.norm);
       });
   } else {
     send(client, message, 'Cara penggunaan : _!tt linkvideo_');
@@ -132,7 +141,7 @@ const downTik = async (client, message, value) => {
 //download tiktok wm
 const downInsta = async (client, message, value) => {
   if (value) {
-    reply(message, 'Postingan/Reelsnya lagi di download bentar yaaww...');
+    reply(message, msg.wait);
     downloader
       .insta(value)
       .then(async ({result}) => {
@@ -148,20 +157,12 @@ const downInsta = async (client, message, value) => {
             send(client, message, media, {sendMediaAsDocument: true});
           }
         } else {
-          send(
-            client,
-            message,
-            '_Server down | Postingan/reels tidak ada atau akun di privat!_',
-          );
+          send(client, message, msg.error.norm);
         }
       })
       .catch(err => {
         dLog('IG', message.from, true, 'ERR : ' + err);
-        send(
-          client,
-          message,
-          '_Ada masalah nih, coba cek linknya ya atau coba lagi!_',
-        );
+        send(client, message, msg.error.norm);
       });
   } else {
     send(client, message, 'Cara penggunaan : _!ig linkPostingan_');
@@ -173,7 +174,7 @@ const downIGstory = async (client, message, value, extra) => {
   if (value) {
     reply(
       message,
-      'Storynya lagi di download bentar yaaww...\n gunakan perintah _!igs usernameIg_ untuk mendownload semua story yang ada.',
+      `${msg.wait}\n gunakan perintah _!igs usernameIg_ untuk mendownload semua story yang ada.`,
     );
     downloader
       .instaStory(extra.length > 1 ? extra[0] : value)
@@ -203,20 +204,12 @@ const downIGstory = async (client, message, value, extra) => {
             }
           }
         } else {
-          send(
-            client,
-            message,
-            '_Server down | Story tidak ada atau akun di privat!_',
-          );
+          send(client, message, msg.error.norm);
         }
       })
       .catch(err => {
         dLog('IGS', message.from, true, 'ERR : ' + err);
-        send(
-          client,
-          message,
-          '_Ada masalah nih, coba cek linknya ya atau coba lagi!_',
-        );
+        send(client, message, msg.error.norm);
       });
   } else {
     send(client, message, 'Cara penggunaan : _!igs linkvideo_');
@@ -226,12 +219,7 @@ const downIGstory = async (client, message, value, extra) => {
 //download youtube
 const downYT = async (client, message, type, value) => {
   if (value) {
-    reply(
-      message,
-      `${
-        type == 'au' ? 'Audionya' : 'Videonya'
-      } lagi di download bentar yaaww...`,
-    );
+    reply(message, msg.wait);
     downloader
       .ytdl(value)
       .then(async ({result}) => {
@@ -246,11 +234,7 @@ const downYT = async (client, message, type, value) => {
       })
       .catch(err => {
         dLog('YOUTUBE', message.from, true, 'ERR : ' + err);
-        send(
-          client,
-          message,
-          '_Ada masalah nih, coba cek linknya ya atau coba lagi!_',
-        );
+        send(client, message, msg.error.norm);
       });
   } else {
     send(client, message, 'Cara penggunaan : _!ytmp4 linkvideo_');
@@ -260,7 +244,7 @@ const downYT = async (client, message, type, value) => {
 //teks ke gif
 const txToGif = async (client, message, value) => {
   if (value) {
-    reply(message, 'Lagi di proses yaw...');
+    reply(message, msg.wait);
     const url = text.textToGif(value);
     const media = await MessageMedia.fromUrl(url, {
       unsafeMime: true,
@@ -275,7 +259,7 @@ const txToGif = async (client, message, value) => {
 //teks ke nulis
 const txToNulis = async (client, message, value) => {
   if (value) {
-    reply(message, 'Lagi di proses yaw...');
+    reply(message, msg.wait);
     const url = text.nulis(value);
     const media = await MessageMedia.fromUrl(url, {
       unsafeMime: true,
@@ -289,7 +273,7 @@ const txToNulis = async (client, message, value) => {
 //teks ke nulis
 const txToQR = async (client, message, value) => {
   if (value) {
-    reply(message, 'Lagi di proses yaw...');
+    reply(message, msg.wait);
     const url = text.qrcode(value);
     const media = await MessageMedia.fromUrl(url, {
       unsafeMime: true,
@@ -303,7 +287,7 @@ const txToQR = async (client, message, value) => {
 //teks ke nulis
 const txToHartaTahta = async (client, message, value) => {
   if (value) {
-    reply(message, 'Lagi di proses yaw...');
+    reply(message, msg.wait);
     const url = text.hartatahta(value);
     const media = await MessageMedia.fromUrl(url, {
       unsafeMime: true,
@@ -317,7 +301,7 @@ const txToHartaTahta = async (client, message, value) => {
 //teks ke nulis
 const ssWeb = async (client, message, value) => {
   if (value) {
-    reply(message, 'Lagi di proses yaw...');
+    reply(message, msg.wait);
     const url = misc.ssWeb(value);
     const media = await MessageMedia.fromUrl(url, {
       unsafeMime: true,
@@ -328,20 +312,10 @@ const ssWeb = async (client, message, value) => {
   }
 };
 
-//teks ke nulis
-const puisi = async (client, message) => {
-  reply(message, 'Lagi di proses yaw...');
-  const url = misc.puisi();
-  const media = await MessageMedia.fromUrl(url, {
-    unsafeMime: true,
-  });
-  send(client, message, media);
-};
-
 //teks ke logo esports
 const txToLogoEsp = async (client, message, value) => {
   if (value) {
-    reply(message, 'Lagi di proses yaw...');
+    reply(message, msg.wait);
     const url = text.logoEsp(value);
     const media = await MessageMedia.fromUrl(url, {
       unsafeMime: true,
@@ -355,7 +329,7 @@ const txToLogoEsp = async (client, message, value) => {
 //teks ke gif
 const txToPhub = async (client, message, value, extra) => {
   if (extra) {
-    reply(message, 'Lagi di proses yaw...');
+    reply(message, msg.wait);
     const url = text.pHub(extra[0], extra[1]);
     const media = await MessageMedia.fromUrl(url, {
       unsafeMime: true,
@@ -363,66 +337,6 @@ const txToPhub = async (client, message, value, extra) => {
     send(client, message, media);
   } else {
     send(client, message, 'Cara penggunaan : _!logoPhub teks1 teks2_');
-  }
-};
-
-//chord
-const chord = async (client, message, value) => {
-  if (value) {
-    reply(message, 'Lagi nyari lagunya bentar yaw...');
-    art
-      .chord(value)
-      .then(async ({result}) => {
-        if (result.result) {
-          send(client, message, result.result);
-        } else {
-          send(
-            client,
-            message,
-            '_Ada masalah nih, coba cek judl lagunya ya atau coba lagi!_',
-          );
-        }
-      })
-      .catch(err => {
-        dLog('CHORD', message.from, true, 'ERR : ' + err);
-        send(
-          client,
-          message,
-          '_Ada masalah nih, coba cek judul lagunya ya atau coba lagi!_',
-        );
-      });
-  } else {
-    send(client, message, 'Cara penggunaan : _!chord sayang_');
-  }
-};
-
-//chord
-const lirik = async (client, message, value) => {
-  if (value) {
-    reply(message, 'Lagi nyari lagunya bentar yaw...');
-    art
-      .lirik(value)
-      .then(async ({result}) => {
-        if (result.result) {
-          send(client, message, result.result);
-        } else {
-          send(
-            client,
-            message,
-            '_Ada masalah nih, coba cek judul lagunya ya atau coba lagi!_',
-          );
-        }
-      })
-      .catch(err => {
-        dLog('LIRIK', message.from, true, 'ERR : ' + err);
-        send(
-          client,
-          message,
-          '_Ada masalah nih, coba cek judul lagunya ya atau coba lagi!_',
-        );
-      });
-  } else {
-    send(client, message, 'Cara penggunaan : _!lirik sayang_');
   }
 };
 
@@ -446,7 +360,7 @@ const hitung = async (client, message, value) => {
 };
 
 const gempa = async (client, message) => {
-  reply(message, 'Alat pendeteksi gempa....');
+  reply(message, msg.wait);
   misc
     .gempa()
     .then(async ({result}) => {
@@ -458,41 +372,13 @@ const gempa = async (client, message) => {
     })
     .catch(err => {
       dLog('GEMPA', message.from, true, 'ERR : ' + err);
-      send(client, message, '_Ada masalah nih, mohon coba lagi ya!_');
-    });
-};
-
-const pantun = async (client, message) => {
-  misc
-    .pantun()
-    .then(async ({result}) => {
-      if (result.pantun) {
-        reply(message, `${result?.pantun}`);
-      }
-    })
-    .catch(err => {
-      dLog('PANTUN', message.from, true, 'ERR : ' + err);
-      send(client, message, '_Ada masalah nih, mohon coba lagi ya!_');
-    });
-};
-
-const quotes = async (client, message) => {
-  misc
-    .quotes()
-    .then(async ({result}) => {
-      if (result.kata) {
-        reply(message, `${result?.kata}`);
-      }
-    })
-    .catch(err => {
-      dLog('QUOTES', message.from, true, 'ERR : ' + err);
-      send(client, message, '_Ada masalah nih, mohon coba lagi ya!_');
+      send(client, message, msg.error.norm);
     });
 };
 
 const resep = async (client, message, value) => {
   if (value) {
-    reply(message, 'Bentar yaaa mas bot yang ganteng lagi cari resepnya');
+    reply(message, msg.wait);
     misc
       .resep(value)
       .then(async ({result}) => {
@@ -510,7 +396,7 @@ const resep = async (client, message, value) => {
         send(
           client,
           message,
-          '_Ada masalah nih atau resep tidak ditemukan, mohon coba lagi ya!_',
+          '_Resep tidak ditemukan, coba cari resep lain ya!',
         );
       });
   } else {
@@ -637,16 +523,11 @@ module.exports = {
   txToLogoEsp,
   txToNulis,
   txToPhub,
-  chord,
-  lirik,
   txToQR,
   txToHartaTahta,
   ssWeb,
-  puisi,
   hitung,
   gempa,
-  pantun,
-  quotes,
   resep,
   donasi,
   ingetin,

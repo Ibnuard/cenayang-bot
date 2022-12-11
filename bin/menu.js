@@ -87,12 +87,6 @@ const onMessageReceived = async (client, message) => {
     case 'logoPhub':
       return command.txToPhub(client, message, value, extra_value);
       break;
-    case 'chord':
-      return command.chord(client, message, value);
-      break;
-    case 'lirik':
-      return command.lirik(client, message, value);
-      break;
     case 'buatqr':
       return command.txToQR(client, message, value);
       break;
@@ -102,17 +96,8 @@ const onMessageReceived = async (client, message) => {
     case 'ssweb':
       return command.ssWeb(client, message, value);
       break;
-    case 'puisi':
-      return command.puisi(client, message);
-      break;
     case 'gempa':
       return command.gempa(client, message);
-      break;
-    case 'pantun':
-      return command.pantun(client, message);
-      break;
-    case 'quotes':
-      return command.quotes(client, message);
       break;
     case 'resep':
       return command.resep(client, message, value);

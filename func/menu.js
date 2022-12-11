@@ -92,18 +92,6 @@ const MENUS = [
     category: 'Fitur Lainnya',
     menu: [
       {
-        cmd: '!chord',
-        desc: 'Cari chord lagu berdasarkan judul',
-      },
-      {
-        cmd: '!lirik',
-        desc: 'Cari lirik lagu berdasarkan judul',
-      },
-      {
-        cmd: '!puisi',
-        desc: 'Cari puisi random',
-      },
-      {
         cmd: '!ssweb',
         desc: 'Screenshootin website',
       },
@@ -114,14 +102,6 @@ const MENUS = [
       {
         cmd: '!gempa',
         desc: 'Data gempa BMKG',
-      },
-      {
-        cmd: '!pantun',
-        desc: 'Pantun random',
-      },
-      {
-        cmd: '!quotes',
-        desc: 'Kata - kata bijak random',
       },
       {
         cmd: '!resep',

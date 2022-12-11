@@ -21,12 +21,32 @@ const client = new Client({
     executablePath:
       'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
   },
+  ffmpegPath: './ffmpeg/bin/ffmpeg.exe',
 });
 
+//GENERATE QR
 client.on('qr', qr => {
   qrcode.generate(qr, {small: true});
 });
 
+//ON STATE CHANGE
+client.on('change_state', async message => {
+  if (message == 'OPENING') {
+    await client.initialize().catch(e => {
+      exec('npm start');
+    });
+  }
+
+  if (
+    message == 'UNPAIRED' ||
+    messsage == 'CONFLICT' ||
+    message == 'UNLAUNCHED'
+  ) {
+    client.resetState();
+  }
+});
+
+//INTIALIZE
 client.on('ready', () => {
   console.log(chalk.green('Client is ready!'));
 
@@ -36,9 +56,26 @@ client.on('ready', () => {
   //REMINDER TASK
   job.reminderTask(() => checkReminderTime(client)).start();
 
+  //BOT TASK
+  job
+    .botTask(async () => {
+      const chats = await client.getChats();
+
+      for (let i = 0; i < chats.length; i++) {
+        if (chats[i].isGroup == true) {
+          console.log('clear group chat');
+          await chats[i].clearMessages();
+        } else {
+          await chats[i].delete();
+        }
+      }
+    })
+    .start();
+
   //cron(() => checkGroupStatus(client), 600000, 'Check Group Premium Validity');
 });
 
+//ON JOIN GROUP
 client.on('group_join', async data => {
   if (data.type !== 'invite') {
     await leaveGroup(client, data);
@@ -47,9 +84,26 @@ client.on('group_join', async data => {
   }
 });
 
+//ON RECEIVE MESSAGES
 client.on('message', async message => {
   //onMessageReceived(client, message);
   handler.onMessageReceived(client, message);
+});
+
+//ON GET CALL
+client.on('incoming_call', async data => {
+  if (!data.isGroup) {
+    const contact = await client.getContactById(data.from);
+    await client.sendMessage(
+      data.from,
+      'Ih nakal ya dibilangin, bot tidak menerima call yaa..\nKamu di block karena melanggar peraturan.\n\nUntuk membuka block silahkan hubungi owner lewat telegram t.me/bluetterflys.',
+    );
+
+    setTimeout(() => {
+      console.log('block contact : ' + data.from);
+      contact.block();
+    }, 5000);
+  }
 });
 
 client.initialize();
