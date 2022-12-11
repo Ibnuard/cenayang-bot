@@ -28,6 +28,14 @@ const saveData = async (path, value) => {
   fs.writeFileSync(file, _encode);
 };
 
+const saveDataOvt = async (path, value) => {
+  const file = getPathValue(path);
+
+  const _encode = JSON.stringify(value);
+
+  fs.writeFileSync(file, _encode);
+};
+
 const updateData = (path, data, key) => {
   const file = getPathValue(path);
   const existingData = loadData(path);
@@ -54,6 +62,7 @@ const loadData = path => {
 
 module.exports = {
   saveData,
+  saveDataOvt,
   loadData,
   updateData,
 };

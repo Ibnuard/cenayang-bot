@@ -13,6 +13,10 @@ const getMomentDiff = (startTime, key) => {
     const days = duration.asDays();
 
     return days;
+  } else if (key == 'minute') {
+    const minute = duration.asMinutes();
+
+    return minute;
   } else {
     const hours = duration.asHours();
 

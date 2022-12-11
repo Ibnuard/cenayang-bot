@@ -118,7 +118,7 @@ const onMessageReceived = async (client, message) => {
       return command.resep(client, message, value);
       break;
     case 'ingetin':
-      return command.ingetin(client, message, value);
+      return command.ingetin(client, message, value, extra_value);
       break;
     case 'join':
       return command.joinGroupPremium(client, message, value);

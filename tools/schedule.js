@@ -9,6 +9,15 @@ const groupTask = func => {
   });
 };
 
+//reminder cron
+const reminderTask = func => {
+  return cron.schedule('* * * * *', () => {
+    dLog('JOB', 'SYSTEM', false, 'RUNNING REMINDER TASK');
+    func();
+  });
+};
+
 module.exports = {
   groupTask,
+  reminderTask,
 };

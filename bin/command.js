@@ -2,6 +2,8 @@ const {MessageMedia} = require('whatsapp-web.js');
 const {downloader, genMenu, db, text, art, misc, reminder} = require('../func');
 const config = require('../config.json');
 const {dLog} = require('../tools/log');
+const moment = require('moment');
+moment.locale('id');
 
 // ========================
 //
@@ -517,29 +519,61 @@ const resep = async (client, message, value) => {
 };
 
 //kirim ping
-const ingetin = (client, message, value) => {
+const ingetin = (client, message, value, extra) => {
   const word =
-    'Cara penggunaan ingetin : \n\nBedasarkan tanggal:\n\n _!ingetin [tanggal/bulan/tahun/jam/menit] ingetin makan_  \n\ndeskripsi -> bakal kirim chat sesuai pada tanggal yang diatur\n\nRelative: \n\n_!ingetin [besok/lusa] ulang tahun emak_ \n\ndeskripsi -> bakal kirim chat besok atau lusa\n\nHari ini: \n\n_!ingetin [harini/13/00] sholat_\n\ndeskripsi -> bakal kirim chat hari ini di jam/menit yang telah diatur';
+    'Cara penggunaan ingetin : \n\nBedasarkan tanggal:\n\n _!ingetin [tanggal/bulan/tahun/jam/menit] ingetin makan_  \n\ndeskripsi -> bakal kirim chat sesuai pada tanggal yang diatur\n\nRelative: \n\n_!ingetin [besok/lusa] ulang tahun emak_ \n\n_!ingetin [besok/jam/menit] makan_\n\n_!ingetin [lusa/jam/menit] ketemu doi_ \n\ndeskripsi -> bakal kirim chat besok atau lusa\n\nHari ini: \n\n_!ingetin [harini/13/00] sholat_\n\ndeskripsi -> bakal kirim chat hari ini di jam/menit yang telah diatur';
   if (value) {
     if (value == 'list') {
       const result = reminder.reminderList(message.from);
       if (result == 'NO_DATA') {
-        reply(message, 'Belum ada peningat dibuat!');
+        reply(message, 'Belum ada pengingat dibuat!');
       } else {
         reply(message, result);
       }
     } else {
-      const remind = reminder.handleReminder(client, message, value);
-      if (remind.time) {
-        reply(
-          message,
-          `Pengingat udah diatur di ${remind.time}, nanti aku ingetin yawww...!\n\nGunakan perintah _!ingetin list_ untuk melihat semua pengingat yang dibuat.`,
-        );
+      if (extra.length > 1 && extra[0] == 'hapus') {
+        if (extra[1].length) {
+          const result = reminder.deleteReminder(message.from, extra[1]);
+
+          if (result == 'SUCCESS') {
+            reply(
+              message,
+              `Pengingat dengan ID ${extra[1]} berhasil dihapus yaww!`,
+            );
+          } else {
+            reply(
+              message,
+              `Pengingat dengan ID ${extra[1]} salah atau tidak ditemukan, mohon coba lagi!`,
+            );
+          }
+        } else {
+          reply(
+            message,
+            `Cara menghapus pengingat : _!ingetin hapus R12_\n\nR12 adalah id pengingat yang akan dihapus!`,
+          );
+        }
       } else {
-        reply(
-          message,
-          `Format perintah salah yaww, kalian bisa gunakan perintah _!ingetin_ untuk lihat formatnya.`,
-        );
+        const remind = reminder.handleReminder(client, message, value);
+        if (remind?.id?.length) {
+          reply(
+            message,
+            `Pengingat udah diatur di ${moment(
+              remind?.datetime,
+            ).calendar()}, nanti aku ingetin yawww...!\n\nGunakan perintah _!ingetin list_ untuk melihat semua pengingat yang dibuat.`,
+          );
+          send(
+            client,
+            message,
+            'Kalo kalian merasa BOT ini berguna / membantu kalian bisa donasi ya untuk membantu biaya server.\nHave nice yayy...',
+          );
+        } else if (remind == 'ERROR_DATE') {
+          reply(message, `Tanggal tidak valid yaww, Mohon diecek kembali OK!`);
+        } else {
+          reply(
+            message,
+            `Format perintah salah yaww, kalian bisa gunakan perintah _!ingetin_ untuk lihat formatnya.`,
+          );
+        }
       }
     }
   } else {

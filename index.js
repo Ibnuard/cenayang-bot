@@ -8,6 +8,10 @@ const {
   checkGroupStatus,
 } = require('./func/group');
 const {job} = require('./tools');
+const moment = require('moment');
+const {checkReminderTime} = require('./func/reminder');
+
+moment.locale('id');
 
 //CLIENT INIT
 const client = new Client({
@@ -28,6 +32,9 @@ client.on('ready', () => {
 
   //GROUP CHECK
   job.groupTask(() => checkGroupStatus(client)).start();
+
+  //REMINDER TASK
+  job.reminderTask(() => checkReminderTime(client)).start();
 
   //cron(() => checkGroupStatus(client), 600000, 'Check Group Premium Validity');
 });
