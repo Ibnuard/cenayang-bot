@@ -1,4 +1,3 @@
-const chalk = require('chalk');
 const qrcode = require('qrcode-terminal');
 const {Client, LocalAuth} = require('whatsapp-web.js');
 const {handler} = require('./bin');
@@ -30,25 +29,25 @@ client.on('qr', qr => {
 });
 
 //ON STATE CHANGE
-client.on('change_state', async message => {
-  if (message == 'OPENING') {
-    await client.initialize().catch(e => {
-      exec('npm start');
-    });
-  }
+// client.on('change_state', async message => {
+//   if (message == 'OPENING') {
+//     await client.initialize().catch(e => {
+//       exec('npm start');
+//     });
+//   }
 
-  if (
-    message == 'UNPAIRED' ||
-    messsage == 'CONFLICT' ||
-    message == 'UNLAUNCHED'
-  ) {
-    client.resetState();
-  }
-});
+//   if (
+//     message == 'UNPAIRED' ||
+//     messsage == 'CONFLICT' ||
+//     message == 'UNLAUNCHED'
+//   ) {
+//     client.resetState();
+//   }
+// });
 
 //INTIALIZE
 client.on('ready', () => {
-  console.log(chalk.green('Client is ready!'));
+  console.log('Client is ready!');
 
   //GROUP CHECK
   job.groupTask(() => checkGroupStatus(client)).start();
@@ -87,7 +86,7 @@ client.on('group_join', async data => {
 //ON RECEIVE MESSAGES
 client.on('message', async message => {
   //onMessageReceived(client, message);
-  handler.onMessageReceived(client, message);
+  handler.onMessageReceived(client, message, client.pupBrowser);
 });
 
 //ON GET CALL

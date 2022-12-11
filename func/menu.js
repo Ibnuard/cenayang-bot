@@ -32,6 +32,10 @@ const MENUS = [
         cmd: '!ingetin',
         desc: 'Membuat reminder atau pengingat',
       },
+      {
+        cmd: '!antikasar',
+        desc: 'Filter kata kata kasar',
+      },
     ],
   },
   {

@@ -19,11 +19,11 @@ const waitArr = [
 const badwArr = [
   'Ngomong kasar ga ditemenin!',
   'Yo rasah nggo misuh cuk!',
-  'Ga boleh gitu ya ganteng!',
-  'Stay halal brother!',
-  'Kamu kesepian?',
-  'Kamu jomblo ya?',
-  'Bicara yang cantik!',
+  'Ga boleh gitu ya maniesssss ngomongnya!',
+  'Tolong lah omonganmu cuk!',
+  'Kamu kesepian Ya?',
+  'Kamu jomblo ya, bicaranya jelek!',
+  'Husttttt... Bicara yang cantik!',
 ];
 
 const msg = {
@@ -44,6 +44,19 @@ const msg = {
   reaction: rand(badwArr),
 };
 
+const pReaction = {
+  loading: '⏳',
+  success: '✅',
+  failed: '❌',
+  info: '⚠️',
+};
+
+const badwReaction = () => {
+  return rand(badwArr);
+};
+
 module.exports = {
   msg,
+  pReaction,
+  badwReaction,
 };

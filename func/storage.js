@@ -11,6 +11,9 @@ const getPathValue = dir => {
     case 'reminder':
       return './database/reminder/list.json'; //path.resolve(__dirname, '../database/group/premium.json');
       break;
+    case 'antikasar':
+      return './database/group/antikasar.json'; //path.resolve(__dirname, '../database/group/premium.json');
+      break;
     default:
       return null;
       break;

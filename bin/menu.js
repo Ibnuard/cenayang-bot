@@ -1,19 +1,35 @@
 //const {owner, menu, sticker, downFB, ping} = require('./command');
 
 const {command} = require('.');
+const {checkStatusAntiKasar} = require('../func/group');
 const {dLog} = require('../tools/log');
 
-const onMessageReceived = async (client, message) => {
+const onMessageReceived = async (client, message, browser) => {
   // ex, format !sticker
   const getMessage = message.body;
+  const chat = await message.getChat();
 
   const prefix = /^[°•π÷×¶∆£¢€¥®™✓=|~!#$%^&./\\©^]/.test(getMessage)
     ? getMessage.match(/^[°•π÷×¶∆£¢€¥®™✓=|~!#$%^&./\\©^]/gi)
     : '-';
 
-  const cmd = getMessage.split(' ')[0].replace(prefix, '');
+  let cmd;
+
+  cmd = getMessage.split(' ')[0].replace(prefix, '');
   const value = getMessage.replace(getMessage.split(' ')[0], '').trimStart();
   const extra_value = value.split(' '); //extra_value[0] extra_value[1]
+
+  //IF RECEIVE BADWORD
+  if (chat.isGroup == true) {
+    if (message.body.includes('kontol')) {
+      const antikasar = checkStatusAntiKasar(message?.from);
+
+      if (antikasar == true) {
+        console.log('kata kasar detected!');
+        cmd = 'badword';
+      }
+    }
+  }
 
   //console.log(`from ${message?.from} -> ${cmd} -> ${value} ${extra_value}`);
   dLog(cmd, message.from, false, `${value} || ${extra_value}`);
@@ -105,11 +121,21 @@ const onMessageReceived = async (client, message) => {
     case 'ingetin':
       return command.ingetin(client, message, value, extra_value);
       break;
+    case 'badword':
+      return command.badWord(client, message);
+      break;
+    case 'antikasar':
+      return command.antikasar(client, message, value, chat);
+      break;
     case 'join':
       return command.joinGroupPremium(client, message, value);
       break;
     case 'pList':
       return command.premiumList(client, message);
+      break;
+
+    case 'pup':
+      return command.pup(browser, value);
       break;
       return null;
       break;

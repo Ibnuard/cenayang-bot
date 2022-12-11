@@ -1,7 +1,7 @@
 const {db} = require('.');
 const {dLog} = require('../tools/log');
 const {getMoment, getMomentDiff} = require('../tools/moment');
-const {loadData, updateData} = require('./storage');
+const {loadData, updateData, saveData, saveDataOvt} = require('./storage');
 const moment = require('moment');
 
 const checkGroupStatus = async client => {
@@ -105,8 +105,82 @@ const joinedPremiumGroup = async (client, group) => {
   }
 };
 
+// ==============================================
+//
+//
+//
+// ================= ANTI KASAR =================
+//
+//
+//
+// =============================================
+
+const antiKasarOn = groupId => {
+  const list = loadData('antikasar');
+
+  if (list.length) {
+    const find = list.filter((item, index) => {
+      return item == groupId;
+    });
+
+    if (find.length > 0) {
+      return 'EXIST';
+    } else {
+      saveData('antikasar', groupId);
+      return 'ADDED';
+    }
+  } else {
+    saveData('antikasar', groupId);
+    return 'ADDED';
+  }
+};
+
+const antiKasarOff = groupId => {
+  const list = loadData('antikasar');
+
+  if (list.length) {
+    const find = list.filter((item, index) => {
+      return item == groupId;
+    });
+
+    if (find.length > 0) {
+      const rmData = list.filter((item, index) => {
+        return item !== groupId;
+      });
+
+      saveDataOvt('antikasar', rmData);
+      return 'REMOVED';
+    } else {
+      return 'INACTIVE';
+    }
+  } else {
+    return 'INACTIVE';
+  }
+};
+
+const checkStatusAntiKasar = groupId => {
+  const data = loadData('antikasar');
+
+  if (data.length) {
+    const find = data.filter((item, index) => {
+      return item == groupId;
+    });
+
+    if (find.length > 0) {
+      return true;
+    } else {
+      return false;
+    }
+  } else {
+    return false;
+  }
+};
+
 module.exports = {
   checkGroupStatus,
   leaveGroup,
   joinedPremiumGroup,
+  antiKasarOff,
+  antiKasarOn,
+  checkStatusAntiKasar,
 };
