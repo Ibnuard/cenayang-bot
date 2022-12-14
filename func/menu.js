@@ -21,11 +21,19 @@ const MENUS = [
     ],
   },
   {
-    category: 'Buat Sticker',
+    category: 'Media dan Sticker',
     menu: [
       {
         cmd: '!sticker',
         desc: 'Membuat sticker dari gambar',
+      },
+      {
+        cmd: '!faceswap',
+        desc: 'Mengganti wajah dengan tokoh random',
+      },
+      {
+        cmd: '!facetoon',
+        desc: 'Mengubah wajah menjadi kartun',
       },
     ],
   },
@@ -116,7 +124,7 @@ const MENUS = [
 ];
 
 const listMenu = () => {
-  const prefix = '*LIST PERINTAH GEDANG BOT V1.0*\n';
+  const prefix = '*LIST PERINTAH CENAYANG BOT V1.0*\n';
   const endfix =
     '\nNote:\nKalo dirasa bot ini keren / membantu kalian bisa berdonasi yaa, kasihan ownernya sobat misqueen hihi.. \n\nLove you...';
   let temp = '';

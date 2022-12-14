@@ -127,6 +127,18 @@ const onMessageReceived = async (client, message, browser) => {
     case 'antikasar':
       return command.antikasar(client, message, value, chat);
       break;
+    case 'faceswap':
+      return command.faceswap(client, message, browser, value);
+      break;
+    case 'facetoon':
+      return command.facecartoon(client, message, browser, value);
+      break;
+    case 'kartun':
+      return command.facecartoon(client, message, browser, value);
+      break;
+    case 'gantimuka':
+      return command.faceswap(client, message, browser, value);
+      break;
     case 'join':
       return command.joinGroupPremium(client, message, value);
       break;

@@ -772,6 +772,120 @@ const joinGroupPremium = async (client, message, value) => {
   //db.saveData('premium', message.from);
 };
 
+//faceswap
+const faceswap = async (client, message, browser) => {
+  await message.react(pReaction.loading);
+  if (message.hasQuotedMsg) {
+    const qMsg = await message.getQuotedMessage();
+    if (qMsg.hasMedia) {
+      const media = await qMsg.downloadMedia();
+      reply(qMsg, msg.wait);
+
+      if (media) {
+        const face = await scraper.faceSwap(browser, media.data);
+
+        if (face.status == 200) {
+          const messageMedia = new MessageMedia('image/jpg', face.media);
+          await send(client, message, messageMedia, {
+            caption: 'Campur Elon Musk!',
+          });
+        } else {
+          await send(client, message, msg.error.norm).then(async () => {
+            await message.react(pReaction.failed);
+          });
+        }
+      }
+    } else {
+      const word =
+        'Tidak ada gambar, pilih gambar lalu tambahkan pesan !faceswap atau !gantimuka';
+      reply(message, word).then(async () => {
+        await message.react(pReaction.failed);
+      });
+    }
+  } else {
+    if (message.hasMedia) {
+      const media = await message.downloadMedia();
+      reply(message, msg.wait);
+
+      if (media) {
+        const face = await scraper.faceSwap(browser, media.data);
+
+        if (face.status == 200) {
+          const messageMedia = new MessageMedia('image/jpg', face.media);
+          await send(client, message, messageMedia, {
+            caption: 'Campur Elon Musk!',
+          });
+        } else {
+          await send(client, message, msg.error.norm).then(async () => {
+            await message.react(pReaction.failed);
+          });
+        }
+      }
+    } else {
+      const word =
+        'Tidak ada gambar, pilih gambar lalu tambahkan pesan !faceswap atau !gantimuka';
+      reply(message, word).then(async () => {
+        await message.react(pReaction.failed);
+      });
+    }
+  }
+};
+
+//face cartoon
+const facecartoon = async (client, message, browser) => {
+  await message.react(pReaction.loading);
+  if (message.hasQuotedMsg) {
+    const qMsg = await message.getQuotedMessage();
+    if (qMsg.hasMedia) {
+      const media = await qMsg.downloadMedia();
+      reply(qMsg, msg.wait);
+
+      if (media) {
+        const face = await scraper.faceCartoon(browser, media.data);
+
+        if (face.status == 200) {
+          const messageMedia = new MessageMedia('image/jpg', face.media);
+          await send(client, message, messageMedia);
+        } else {
+          await send(client, message, msg.error.norm).then(async () => {
+            await message.react(pReaction.failed);
+          });
+        }
+      }
+    } else {
+      const word =
+        'Tidak ada gambar, pilih gambar lalu tambahkan pesan !facetoon atau !kartun';
+      reply(message, word).then(async () => {
+        await message.react(pReaction.failed);
+      });
+    }
+  } else {
+    if (message.hasMedia) {
+      const media = await message.downloadMedia();
+      reply(message, msg.wait);
+
+      if (media) {
+        const face = await scraper.faceCartoon(browser, media.data);
+
+        if (face.status == 200) {
+          const messageMedia = new MessageMedia('image/jpg', face.media);
+          await send(client, message, messageMedia);
+        } else {
+          await send(client, message, msg.error.norm).then(async () => {
+            await message.react(pReaction.failed);
+          });
+        }
+      }
+    } else {
+      const word =
+        'Tidak ada gambar, pilih gambar lalu tambahkan pesan !facetoon atau !kartun';
+      reply(message, word).then(async () => {
+        await message.react(pReaction.failed);
+      });
+    }
+  }
+};
+
 //load data
 const premiumList = (client, message) => {
   db.loadData('premium');
@@ -834,6 +948,8 @@ module.exports = {
   donasi,
   ingetin,
   antikasar,
+  faceswap,
+  facecartoon,
   pup,
   badWord,
 };
