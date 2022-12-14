@@ -4,7 +4,11 @@ const MENUS = [
     menu: [
       {
         cmd: '!ping',
-        desc: 'Mengetahui status bot',
+        desc: 'Melakukan ping ke bot',
+      },
+      {
+        cmd: '!info',
+        desc: 'Mengetahui info bot',
       },
       {
         cmd: '!donasi',
@@ -51,11 +55,7 @@ const MENUS = [
       },
       {
         cmd: '!ig',
-        desc: 'Download post/reels dari Instagram',
-      },
-      {
-        cmd: '!igs',
-        desc: 'Download story dari Instagram. contoh _!igstory username urutanStory_',
+        desc: 'Download post/reels/story dari Instagram',
       },
       {
         cmd: '!ytmp4',

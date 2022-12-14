@@ -6,3 +6,4 @@ exports.text = require('./textMaker');
 exports.art = require('./art');
 exports.misc = require('./misc');
 exports.reminder = require('./reminder');
+exports.scraper = require('./scraper');

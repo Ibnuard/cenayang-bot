@@ -18,7 +18,7 @@ const client = new Client({
   puppeteer: {
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
     executablePath:
-      'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+      '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
   },
   ffmpegPath: './ffmpeg/bin/ffmpeg.exe',
 });
@@ -28,22 +28,9 @@ client.on('qr', qr => {
   qrcode.generate(qr, {small: true});
 });
 
-//ON STATE CHANGE
-// client.on('change_state', async message => {
-//   if (message == 'OPENING') {
-//     await client.initialize().catch(e => {
-//       exec('npm start');
-//     });
-//   }
-
-//   if (
-//     message == 'UNPAIRED' ||
-//     messsage == 'CONFLICT' ||
-//     message == 'UNLAUNCHED'
-//   ) {
-//     client.resetState();
-//   }
-// });
+client.on('disconnected', async reason => {
+  console.log('dissconnected : ' + reason);
+});
 
 //INTIALIZE
 client.on('ready', () => {

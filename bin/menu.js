@@ -43,6 +43,9 @@ const onMessageReceived = async (client, message, browser) => {
     case 'ping':
       return command.ping(client, message);
       break;
+    case 'info':
+      return command.info(client, message);
+      break;
     case 'donasi':
       return command.donasi(client, message);
       break;
@@ -71,13 +74,10 @@ const onMessageReceived = async (client, message, browser) => {
       return command.downTik(client, message, value);
       break;
     case 'ig':
-      return command.downInsta(client, message, value);
+      return command.downInsta(browser, client, message, value);
       break;
     case 'instagram':
-      return command.downInsta(client, message, value);
-      break;
-    case 'igs':
-      return command.downIGstory(client, message, value, extra_value);
+      return command.downInsta(browser, client, message, value);
       break;
     case 'ytmp4':
       return command.downYT(client, message, 'vi', value);
@@ -133,9 +133,8 @@ const onMessageReceived = async (client, message, browser) => {
     case 'pList':
       return command.premiumList(client, message);
       break;
-
     case 'pup':
-      return command.pup(browser, value);
+      return command.pup(client, message, browser, value);
       break;
       return null;
       break;

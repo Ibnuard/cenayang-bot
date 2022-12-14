@@ -1,8 +1,15 @@
 const {MessageMedia} = require('whatsapp-web.js');
-let {igApi} = require('insta-fetcher');
 
 //NON PACKAGE
-const {downloader, genMenu, db, text, art, misc, reminder} = require('../func');
+const {
+  downloader,
+  genMenu,
+  db,
+  text,
+  misc,
+  reminder,
+  scraper,
+} = require('../func');
 const config = require('../config.json');
 const {dLog} = require('../tools/log');
 const moment = require('moment');
@@ -36,6 +43,15 @@ const send = (client, message, reply, ops) => {
 
 //kirim ping
 const ping = async (client, message) => {
+  await message.react(pReaction.loading);
+  const word = `Pongg Pongg!!!`;
+  send(client, message, word).then(async () => {
+    await message.react(pReaction.success);
+  });
+};
+
+//kirim info bot
+const info = async (client, message) => {
   const word = msg.success.greeting;
   await message.react(pReaction.loading);
   send(client, message, word).then(async () => {
@@ -191,42 +207,39 @@ const downTik = async (client, message, value) => {
 };
 
 //download tiktok wm
-const downInsta = async (client, message, value) => {
+const downInsta = async (browser, client, message, value) => {
   await message.react(pReaction.loading);
   if (value) {
     reply(message, msg.wait);
-    downloader
-      .insta(value)
-      .then(async ({result}) => {
-        if (result) {
-          for (let i = 0; i < result?.post?.length; i++) {
-            const video = result.post[i].urlDownload;
-            const media = await MessageMedia.fromUrl(video, {
-              unsafeMime: true,
-              filename: `insta-${result?.owner}.${
-                result.post[i].type == 'image' ? 'jpeg' : 'mp4'
-              }`,
-            });
-            send(client, message, media, {sendMediaAsDocument: true}).then(
-              async () => {
-                await message.react(pReaction.success);
-              },
-            );
-          }
-        } else {
-          send(client, message, msg.error.norm).then(async () => {
-            await message.react(pReaction.failed);
+
+    const isInstagramURL =
+      /(?:https?:)?\/\/(?:www\.)?(?:instagram\.com|instagr\.am)\//.test(value);
+
+    if (isInstagramURL) {
+      const ig = await scraper.igDownload(browser, value);
+
+      if (ig?.media) {
+        for (links in ig?.media) {
+          const media = await MessageMedia.fromUrl(ig?.media[links], {
+            unsafeMime: true,
+          });
+
+          await send(client, message, media).then(async () => {
+            await message.react(pReaction.success);
           });
         }
-      })
-      .catch(err => {
-        dLog('IG', message.from, true, 'ERR : ' + err);
+      } else {
         send(client, message, msg.error.norm).then(async () => {
           await message.react(pReaction.failed);
         });
+      }
+    } else {
+      send(client, message, 'Url instagram tidak valid').then(async () => {
+        await message.react(pReaction.info);
       });
+    }
   } else {
-    send(client, message, 'Cara penggunaan : _!ig linkPostingan_').then(
+    send(client, message, 'Cara penggunaan : _!ig <urlinstagram>_').then(
       async () => {
         await message.react(pReaction.info);
       },
@@ -765,18 +778,19 @@ const premiumList = (client, message) => {
 };
 
 //pup
-const pup = async username => {
-  let ig = new igApi('test', false);
+const pup = async (client, message, browser) => {
+  const media = await message.downloadMedia();
 
-  // Fetch stories
-  await ig
-    .fetchStories(username)
-    .then(res => {
-      console.log(JSON.stringify(res));
-    })
-    .catch(e => {
-      console.log(JSON.stringify(e));
-    });
+  if (media) {
+    const face = await scraper.faceSwap(browser, media.data);
+
+    if (face.status == 200) {
+      const messageMedia = new MessageMedia('image/jpg', face.media);
+      await send(client, message, messageMedia);
+    } else {
+      await send(client, message, 'Ada yg error!');
+    }
+  }
 };
 
 //check if is admin
@@ -796,6 +810,7 @@ module.exports = {
   reply,
   send,
   ping,
+  info,
   owner,
   sticker,
   menu,
