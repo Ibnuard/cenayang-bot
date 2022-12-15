@@ -59,11 +59,14 @@ const igDownload = async (browser, url) => {
 };
 
 // FACESWAP
-const faceSwap = async (browser, image) => {
+const faceSwap = async (browser, input, target) => {
   let BASE_URL = 'https://faceswapper.ai/';
 
-  let path = './temp/';
-  let filename = `face-${randomInt(10000, 90999)}.jpg`;
+  const randName = `temp${randomInt(10000, 99999)}`;
+
+  let path = `./temp/${randName}/`;
+  let inputfile = `input.jpg`;
+  let targetfile = 'target.jpg';
 
   const page = await browser.newPage();
 
@@ -79,15 +82,19 @@ const faceSwap = async (browser, image) => {
 
   await page.setUserAgent(userAgent.random().toString());
 
-  fs.writeFileSync(path + filename, Buffer.from(image, 'base64'));
+  if (!fs.existsSync(path)) {
+    fs.mkdirSync(path, {recursive: true});
+    fs.writeFileSync(path + inputfile, Buffer.from(input, 'base64'));
+    fs.writeFileSync(path + targetfile, Buffer.from(target, 'base64'));
+  }
 
   try {
     const elementHandle = await page.$('input[type=file]');
-    await elementHandle.uploadFile('./temp/target.jpeg');
+    await elementHandle.uploadFile(path + targetfile);
 
     await page.waitForNavigation();
     const elementHandle2 = await page.$("input[id='filePre2']");
-    await elementHandle2.uploadFile(path + filename);
+    await elementHandle2.uploadFile(path + inputfile);
 
     await page.click('button.anor_fn_button.main-button');
 
@@ -96,7 +103,7 @@ const faceSwap = async (browser, image) => {
       {timeout: 0},
     );
 
-    fs.unlinkSync(path + filename);
+    fs.rmSync(path, {recursive: true, force: true});
 
     const data = await page.evaluate(async () => {
       root = Array.from(
@@ -127,7 +134,7 @@ const faceSwap = async (browser, image) => {
       error: null,
     };
   } catch (error) {
-    fs.unlinkSync(path + filename);
+    fs.rmSync(path, {recursive: true, force: true});
     await page.close();
     return {
       status: 400,

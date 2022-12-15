@@ -9,6 +9,7 @@ const {
   misc,
   reminder,
   scraper,
+  imageManipulation,
 } = require('../func');
 const config = require('../config.json');
 const {dLog} = require('../tools/log');
@@ -641,6 +642,38 @@ const badWord = (client, message) => {
 };
 
 //load data
+const warnBye = async (client, message, value, chat) => {
+  if (chat.isGroup) {
+    const admin = isAdmin(message, chat);
+    if (admin) {
+      await send(
+        client,
+        message,
+        'Ihhh kok gitu, Aku ada salah? apa udah ga butuh aku lagi? 😔 \nYauda kalo itu mau kamu, kirim !yesbye untuk mengeluarkan bot.',
+      ).then(async () => {
+        await message.react(pReaction.success);
+      });
+      await chat.leave();
+      await chat.delete();
+    } else {
+      send(
+        client,
+        message,
+        'Fitur ini hanya bisa digunakan oleh admin grup!',
+      ).then(async () => {
+        await message.react(pReaction.info);
+      });
+    }
+  } else {
+    send(client, message, 'Fitur ini hanya tersedia untuk grup!').then(
+      async () => {
+        await message.react(pReaction.info);
+      },
+    );
+  }
+};
+
+//load data
 const bye = async (client, message, value, chat) => {
   if (chat.isGroup) {
     const admin = isAdmin(message, chat);
@@ -705,22 +738,38 @@ const joinGroupPremium = async (client, message, value) => {
   //db.saveData('premium', message.from);
 };
 
-//faceswap
-const faceswap = async (client, message, browser) => {
+const faceswapHandler = async (client, message) => {
   await message.react(pReaction.loading);
-  if (message.hasQuotedMsg) {
-    const qMsg = await message.getQuotedMessage();
-    if (qMsg.hasMedia) {
-      const media = await qMsg.downloadMedia();
-      reply(qMsg, msg.wait);
+  const tutor =
+    'Cara penggunaan fitur !faceswap\n\n' +
+    'Silahkan reply foto muka dengan foto muka orang lain\n\n' +
+    'Tambahkan caption _!faceswap mulai_\n\n' +
+    'Terima kasih';
+  await send(client, message, tutor).then(async () => {
+    await message.react(pReaction.success);
+  });
+};
 
-      if (media) {
-        const face = await scraper.faceSwap(browser, media.data);
+//faceswap
+const faceswap = async (client, message, browser, value, extra) => {
+  await message.react(pReaction.loading);
 
-        if (face.status == 200) {
-          const messageMedia = new MessageMedia('image/jpg', face.media);
-          await send(client, message, messageMedia, {
-            caption: 'Versi Elon Musk!',
+  if (value) {
+    if (message.hasQuotedMsg) {
+      const quoted = await message.getQuotedMessage();
+      if (quoted.hasMedia) {
+        //do here
+        const result = await imageManipulation.faceSwap(
+          browser,
+          client,
+          message,
+          quoted,
+        );
+
+        if (result.message == 'SUCCESS') {
+          const messageMedia = new MessageMedia('image/jpg', result.data);
+          await send(client, message, messageMedia).then(async () => {
+            await message.react(pReaction.success);
           });
           await send(
             client,
@@ -732,45 +781,22 @@ const faceswap = async (client, message, browser) => {
             await message.react(pReaction.failed);
           });
         }
+      } else {
+        const word =
+          'Tidak ada foto, pilih foto lalu tambahkan caption !faceswap mulai';
+        reply(message, word).then(async () => {
+          await message.react(pReaction.failed);
+        });
       }
     } else {
       const word =
-        'Tidak ada gambar, pilih gambar lalu tambahkan pesan !faceswap atau !gantimuka';
+        'Tidak ada foto yang di reply, silahkan reply foto dengan foto lain lalu gunakan perintah !faceswap mulai';
       reply(message, word).then(async () => {
         await message.react(pReaction.failed);
       });
     }
   } else {
-    if (message.hasMedia) {
-      const media = await message.downloadMedia();
-      reply(message, msg.wait);
-
-      if (media) {
-        const face = await scraper.faceSwap(browser, media.data);
-
-        if (face.status == 200) {
-          const messageMedia = new MessageMedia('image/jpg', face.media);
-          await send(client, message, messageMedia, {
-            caption: 'Versi Elon Musk!',
-          });
-          await send(
-            client,
-            message,
-            'Kalo kalian merasa BOT ini berguna / membantu kalian bisa donasi ya untuk membantu biaya server.\nHave nice yayy...',
-          );
-        } else {
-          await send(client, message, msg.error.norm).then(async () => {
-            await message.react(pReaction.failed);
-          });
-        }
-      }
-    } else {
-      const word =
-        'Tidak ada gambar, pilih gambar lalu tambahkan pesan !faceswap atau !gantimuka';
-      reply(message, word).then(async () => {
-        await message.react(pReaction.failed);
-      });
-    }
+    return await faceswapHandler(client, message);
   }
 };
 
@@ -973,4 +999,5 @@ module.exports = {
   pup,
   badWord,
   bye,
+  warnBye,
 };

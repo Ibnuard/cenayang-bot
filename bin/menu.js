@@ -3,6 +3,7 @@
 const {command} = require('.');
 const {checkStatusAntiKasar} = require('../func/group');
 const {dLog} = require('../tools/log');
+const bwordList = require('../database/group/katakasar.json');
 
 const onMessageReceived = async (client, message, browser) => {
   // ex, format !sticker
@@ -21,7 +22,7 @@ const onMessageReceived = async (client, message, browser) => {
 
   //IF RECEIVE BADWORD
   if (chat.isGroup == true) {
-    if (message.body.includes('kontol')) {
+    if (bwordList.some(v => message.body.includes(v))) {
       const antikasar = checkStatusAntiKasar(message?.from);
 
       if (antikasar == true) {
@@ -119,25 +120,19 @@ const onMessageReceived = async (client, message, browser) => {
       return command.antikasar(client, message, value, chat);
       break;
     case 'bye':
+      return command.warnBye(client, message, value, chat);
+      break;
+    case 'yesbye':
       return command.bye(client, message, value, chat);
       break;
     case 'faceswap':
-      return command.faceswap(client, message, browser, value);
+      return command.faceswap(client, message, browser, value, extra_value);
       break;
     case 'facetoon':
       return command.facecartoon(client, message, browser, value);
       break;
-    case 'kartun':
-      return command.facecartoon(client, message, browser, value);
-      break;
     case 'jadianime':
       return command.fotoAnime(client, message, browser, value);
-      break;
-    case 'anime':
-      return command.fotoAnime(client, message, browser, value);
-      break;
-    case 'gantimuka':
-      return command.faceswap(client, message, browser, value);
       break;
     case 'join':
       return command.joinGroupPremium(client, message, value);
