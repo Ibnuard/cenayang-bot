@@ -8,18 +8,18 @@ const checkGroupStatus = async client => {
   const groupList = loadData('group_premium');
 
   async function _checkValidity(id, time) {
-    const valid = getMomentDiff(time, 'hours');
+    const valid = getMomentDiff(time, 'days');
 
-    if (valid > 3) {
+    if (valid > 29) {
       const grup = await client.getChatById(id);
-      await client.sendMessage(
-        id,
-        'Halo gaes..\nGedang leave dari grup ya soalnya masa berlakunya udah habis huhuu\n\nKalian bisa hubungin admin yaa untuk pake bot ini lagi\n\nMaaciww.. See u...',
-      );
-
-      setTimeout(async () => {
-        await grup.leave();
-      }, 2000);
+      await client
+        .sendMessage(
+          id,
+          'Halo gaes..\nGedang leave dari grup ya soalnya masa berlakunya udah habis huhuu\n\nKalian bisa hubungin admin yaa untuk pake bot ini lagi\n\nMaaciww.. See u...',
+        )
+        .then(async () => {
+          await grup.leave();
+        });
     }
   }
 

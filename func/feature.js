@@ -83,20 +83,12 @@ const MENUS = [
     category: 'Teks dan Tulisan',
     menu: [
       {
-        cmd: '!text2gif',
-        desc: 'Ubah teks jadi gif',
-      },
-      {
         cmd: '!nulis',
         desc: 'Ubah teks jadi nulis di kertas',
       },
       {
         cmd: '!logo',
         desc: 'Ubah teks jadi logo esports',
-      },
-      {
-        cmd: '!logoPhub',
-        desc: 'Ubah teks jadi logo P*rn hub',
       },
       {
         cmd: '!hartatahta',
@@ -109,7 +101,7 @@ const MENUS = [
     menu: [
       {
         cmd: '!ssweb',
-        desc: 'Screenshootin website',
+        desc: 'Screenshoot website',
       },
       {
         cmd: '!buatqr',
@@ -119,9 +111,14 @@ const MENUS = [
         cmd: '!gempa',
         desc: 'Data gempa BMKG',
       },
+    ],
+  },
+  {
+    category: 'Fitur Grup dan Admin',
+    menu: [
       {
-        cmd: '!resep',
-        desc: 'Cari resep masakan',
+        cmd: '!bye',
+        desc: 'Mengeluarkan BOT dari grup',
       },
     ],
   },

@@ -58,6 +58,9 @@ const onMessageReceived = async (client, message, browser) => {
     case 'stiker':
       return command.sticker(client, message);
       break;
+    case 'stikers':
+      return command.sticker(client, message);
+      break;
     case 'menu':
       return command.menu(client, message);
       break;
@@ -91,32 +94,20 @@ const onMessageReceived = async (client, message, browser) => {
     case 'ytmp3':
       return command.downYT(client, message, 'au', value);
       break;
-    case 'text2gif':
-      return command.txToGif(client, message, value);
-      break;
     case 'nulis':
       return command.txToNulis(client, message, value);
       break;
     case 'logo':
       return command.txToLogoEsp(client, message, value);
       break;
-    case 'logoPhub':
-      return command.txToPhub(client, message, value, extra_value);
-      break;
     case 'buatqr':
       return command.txToQR(client, message, value);
-      break;
-    case 'hartatahta':
-      return command.txToHartaTahta(client, message, value);
       break;
     case 'ssweb':
       return command.ssWeb(client, message, value);
       break;
     case 'gempa':
       return command.gempa(client, message);
-      break;
-    case 'resep':
-      return command.resep(client, message, value);
       break;
     case 'ingetin':
       return command.ingetin(client, message, value, extra_value);
@@ -126,6 +117,9 @@ const onMessageReceived = async (client, message, browser) => {
       break;
     case 'antikasar':
       return command.antikasar(client, message, value, chat);
+      break;
+    case 'bye':
+      return command.bye(client, message, value, chat);
       break;
     case 'faceswap':
       return command.faceswap(client, message, browser, value);

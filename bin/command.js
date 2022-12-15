@@ -347,28 +347,6 @@ const downYT = async (client, message, type, value) => {
   }
 };
 
-//teks ke gif
-const txToGif = async (client, message, value) => {
-  await message.react(pReaction.loading);
-  if (value) {
-    reply(message, msg.wait);
-    const url = text.textToGif(value);
-    const media = await MessageMedia.fromUrl(url, {
-      unsafeMime: true,
-      filename: 'image.gif',
-    });
-    send(client, message, media).then(async () => {
-      await message.react(pReaction.success);
-    });
-  } else {
-    send(client, message, 'Cara penggunaan : _!text2gif halo ganteng_').then(
-      async () => {
-        await message.react(pReaction.info);
-      },
-    );
-  }
-};
-
 //teks ke nulis
 const txToNulis = async (client, message, value) => {
   await message.react(pReaction.loading);
@@ -412,27 +390,6 @@ const txToQR = async (client, message, value) => {
 };
 
 //teks ke nulis
-const txToHartaTahta = async (client, message, value) => {
-  await message.react(pReaction.loading);
-  if (value) {
-    reply(message, msg.wait);
-    const url = text.hartatahta(value);
-    const media = await MessageMedia.fromUrl(url, {
-      unsafeMime: true,
-    });
-    send(client, message, media).then(async () => {
-      await message.react(pReaction.success);
-    });
-  } else {
-    send(client, message, 'Cara penggunaan : _!hartatahta melisa_').then(
-      async () => {
-        await message.react(pReaction.info);
-      },
-    );
-  }
-};
-
-//teks ke nulis
 const ssWeb = async (client, message, value) => {
   await message.react(pReaction.loading);
   if (value) {
@@ -467,27 +424,6 @@ const txToLogoEsp = async (client, message, value) => {
     });
   } else {
     send(client, message, 'Cara penggunaan : _!logo squadKece_').then(
-      async () => {
-        await message.react(pReaction.info);
-      },
-    );
-  }
-};
-
-//teks ke gif
-const txToPhub = async (client, message, value, extra) => {
-  await message.react(pReaction.loading);
-  if (extra) {
-    reply(message, msg.wait);
-    const url = text.pHub(extra[0], extra[1]);
-    const media = await MessageMedia.fromUrl(url, {
-      unsafeMime: true,
-    });
-    send(client, message, media).then(async () => {
-      await message.react(pReaction.success);
-    });
-  } else {
-    send(client, message, 'Cara penggunaan : _!logoPhub teks1 teks2_').then(
       async () => {
         await message.react(pReaction.info);
       },
@@ -545,41 +481,6 @@ const gempa = async (client, message) => {
         await message.react(pReaction.failed);
       });
     });
-};
-
-const resep = async (client, message, value) => {
-  await message.react(pReaction.loading);
-  if (value) {
-    reply(message, msg.wait);
-    misc
-      .resep(value)
-      .then(async ({result}) => {
-        if (result) {
-          const word = `${result?.title}\n\nBahan: \n${result?.bahan}\n\nCara Pembuatan: ${result?.cara}`;
-          const media = await MessageMedia.fromUrl(result?.image, {
-            unsafeMime: true,
-          });
-
-          send(client, message, media, {caption: word}).then(async () => {
-            await message.react(pReaction.success);
-          });
-        }
-      })
-      .catch(err => {
-        dLog('RESEP', message.from, true, 'ERR : ' + err);
-        send(
-          client,
-          message,
-          '_Resep tidak ditemukan, coba cari resep lain ya!',
-        ).then(async () => {
-          await message.react(pReaction.failed);
-        });
-      });
-  } else {
-    send(client, message, 'Cara penggunaan : _!resep rawon_').then(async () => {
-      await message.react(pReaction.info);
-    });
-  }
 };
 
 //kirim ping
@@ -737,6 +638,38 @@ const badWord = (client, message) => {
   const reaction = badwReaction();
   console.log('selected r : ' + reaction);
   reply(message, reaction);
+};
+
+//load data
+const bye = async (client, message, value, chat) => {
+  if (chat.isGroup) {
+    const admin = isAdmin(message, chat);
+    if (admin) {
+      await send(
+        client,
+        message,
+        'Bot izin pamit yaa, semoga dapet admin yang lebih baik hihi...\n\nThank You and I Love You 4000',
+      ).then(async () => {
+        await message.react(pReaction.success);
+      });
+      await chat.leave();
+      await chat.delete();
+    } else {
+      send(
+        client,
+        message,
+        'Fitur ini hanya bisa digunakan oleh admin grup!',
+      ).then(async () => {
+        await message.react(pReaction.info);
+      });
+    }
+  } else {
+    send(client, message, 'Fitur ini hanya tersedia untuk grup!').then(
+      async () => {
+        await message.react(pReaction.info);
+      },
+    );
+  }
 };
 
 // =================================================
@@ -1025,16 +958,12 @@ module.exports = {
   downYT,
   joinGroupPremium,
   premiumList,
-  txToGif,
   txToLogoEsp,
   txToNulis,
-  txToPhub,
   txToQR,
-  txToHartaTahta,
   ssWeb,
   hitung,
   gempa,
-  resep,
   donasi,
   ingetin,
   antikasar,
@@ -1043,4 +972,5 @@ module.exports = {
   fotoAnime,
   pup,
   badWord,
+  bye,
 };

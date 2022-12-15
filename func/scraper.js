@@ -63,7 +63,7 @@ const faceSwap = async (browser, image) => {
   let BASE_URL = 'https://faceswapper.ai/';
 
   let path = './temp/';
-  let filename = `face-${randomInt(1000, 9999)}.jpg`;
+  let filename = `face-${randomInt(10000, 90999)}.jpg`;
 
   const page = await browser.newPage();
 
@@ -142,7 +142,7 @@ const faceCartoon = async (browser, image) => {
   let BASE_URL = 'https://animefilter.com/';
 
   let path = './temp/';
-  let filename = `face-${randomInt(10000, 99990)}.jpg`;
+  let filename = `toon-${randomInt(10000, 99990)}.jpg`;
 
   const page = await browser.newPage();
 
@@ -212,7 +212,7 @@ const anime = async (browser, image) => {
 
   const page = await browser.newPage();
 
-  const response = await page.goto(BASE_URL, {waitUntil: 'load'});
+  const response = await page.goto(BASE_URL, {waitUntil: 'networkidle0'});
 
   const pageStatus = response.status();
 
@@ -241,19 +241,12 @@ const anime = async (browser, image) => {
         '#page-container > div > div._modal_f95ly_1 > div > div > div._confirm-btn_1fu81_42',
       );
     }
-    // await page.waitForSelector(
-    //   '#page-container > div > div._modal_f95ly_1 > div > div > div._confirm-btn_1fu81_42',
-    // );
-
-    // await page.click(
-    //   '#page-container > div > div._modal_f95ly_1 > div > div > div._confirm-btn_1fu81_42',
-    // );
 
     await page.click('#page-container > div > div._action-panel_ewapq_64');
 
-    //   await page.click(
-    //     "#page-container > div > div._modal_f95ly_1 > div > div > div"
-    //   );
+    await page.waitForSelector(
+      '#page-container > div > div._modal_f95ly_1 > div > div > div',
+    );
 
     const [fileChooser] = await Promise.all([
       page.waitForFileChooser(),
@@ -265,19 +258,14 @@ const anime = async (browser, image) => {
     await fileChooser.accept([path + filename]);
 
     await page.waitForNavigation();
-
-    await page.click(
-      '#page-view > div._olympic-result-page_jnpgw_1 > div._result-page_jnpgw_93 > div._action-panel_jnpgw_144 > div._action-btn-group_jnpgw_149',
-    );
-
     await page.waitForSelector(
-      '#page-view > div._olympic-result-page_jnpgw_1 > div._modal_f95ly_1 > div > div > div > img._save-pic-container-content-image_jnpgw_288',
+      '#page-view > div._olympic-result-page_jnpgw_1 > div._result-page_jnpgw_93 > div._temp-container_jnpgw_19 > div > div > img',
     );
 
     const data = await page.evaluate(async () => {
       return document
         .querySelector(
-          '#page-view > div._olympic-result-page_jnpgw_1 > div._modal_f95ly_1 > div > div > div > img._save-pic-container-content-image_jnpgw_288',
+          '#page-view > div._olympic-result-page_jnpgw_1 > div._result-page_jnpgw_93 > div._temp-container_jnpgw_19 > div > div > img',
         )
         .getAttribute('src');
     });

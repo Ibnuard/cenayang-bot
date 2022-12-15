@@ -265,29 +265,33 @@ const deleteReminder = (reminderId, id) => {
 };
 
 //CHEK REMINDER TIME
-const checkReminderTime = client => {
+const checkReminderTime = async client => {
   const data = loadData('reminder');
 
   if (data.length) {
     console.log('REMINDER FOUND : ' + data?.length);
 
-    data.forEach((item, index) => {
+    data.forEach(async (item, index) => {
       const valid = getMomentDiff(item.datetime, 'minute');
-      console.log('REMINDER MIN : ' + valid);
 
-      if (valid > 0) {
+      const roundTime = Math.round(valid);
+
+      console.log('RUNNING FOR : ' + roundTime);
+
+      if (roundTime > -1) {
         console.log('REMINDER START : ' + item.message);
-        const deletion = deleteReminder(item.id, item.listId);
 
-        if (deletion == 'SUCCESS') {
-          client.sendMessage(
-            item.id,
-            '_Pengingat Kamu : ' + item.message + '_',
-          );
-          client.sendMessage(item.id, 'Have nice yayyy!!!');
-        }
+        await client.sendMessage(item.id, `Cenayang BOT Reminder`);
+        await client.sendMessage(item.id, `-> _${item.message}_`);
+        client.sendMessage(item.id, 'Have nice yayyy!!!');
+      }
+
+      if (valid == 1) {
+        deleteReminder(item.id, item.listId);
       }
     });
+  } else {
+    console.log('REMINDER NOT FOUND');
   }
 };
 
