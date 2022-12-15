@@ -649,12 +649,10 @@ const warnBye = async (client, message, value, chat) => {
       await send(
         client,
         message,
-        'Ihhh kok gitu, Aku ada salah? apa udah ga butuh aku lagi? 😔 \nYauda kalo itu mau kamu, kirim !yesbye untuk mengeluarkan bot.',
+        'Ihhh kok gitu, Aku ada salah? apa udah ga butuh aku lagi? 😔 \nYauda kalo itu mau kamu... \n\nkirim !yesbye untuk mengeluarkan bot.',
       ).then(async () => {
         await message.react(pReaction.success);
       });
-      await chat.leave();
-      await chat.delete();
     } else {
       send(
         client,
@@ -681,7 +679,7 @@ const bye = async (client, message, value, chat) => {
       await send(
         client,
         message,
-        'Bot izin pamit yaa, semoga dapet admin yang lebih baik hihi...\n\nThank You and I Love You 4000',
+        'Bot izin pamit yaa, semoga kita bertemu lagi .\n\nThank You and I Love You 4000',
       ).then(async () => {
         await message.react(pReaction.success);
       });
