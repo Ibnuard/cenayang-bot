@@ -136,6 +136,12 @@ const onMessageReceived = async (client, message, browser) => {
     case 'kartun':
       return command.facecartoon(client, message, browser, value);
       break;
+    case 'jadianime':
+      return command.fotoAnime(client, message, browser, value);
+      break;
+    case 'anime':
+      return command.fotoAnime(client, message, browser, value);
+      break;
     case 'gantimuka':
       return command.faceswap(client, message, browser, value);
       break;

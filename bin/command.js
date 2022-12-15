@@ -787,8 +787,13 @@ const faceswap = async (client, message, browser) => {
         if (face.status == 200) {
           const messageMedia = new MessageMedia('image/jpg', face.media);
           await send(client, message, messageMedia, {
-            caption: 'Campur Elon Musk!',
+            caption: 'Versi Elon Musk!',
           });
+          await send(
+            client,
+            message,
+            'Kalo kalian merasa BOT ini berguna / membantu kalian bisa donasi ya untuk membantu biaya server.\nHave nice yayy...',
+          );
         } else {
           await send(client, message, msg.error.norm).then(async () => {
             await message.react(pReaction.failed);
@@ -813,8 +818,13 @@ const faceswap = async (client, message, browser) => {
         if (face.status == 200) {
           const messageMedia = new MessageMedia('image/jpg', face.media);
           await send(client, message, messageMedia, {
-            caption: 'Campur Elon Musk!',
+            caption: 'Versi Elon Musk!',
           });
+          await send(
+            client,
+            message,
+            'Kalo kalian merasa BOT ini berguna / membantu kalian bisa donasi ya untuk membantu biaya server.\nHave nice yayy...',
+          );
         } else {
           await send(client, message, msg.error.norm).then(async () => {
             await message.react(pReaction.failed);
@@ -846,6 +856,11 @@ const facecartoon = async (client, message, browser) => {
         if (face.status == 200) {
           const messageMedia = new MessageMedia('image/jpg', face.media);
           await send(client, message, messageMedia);
+          await send(
+            client,
+            message,
+            'Kalo kalian merasa BOT ini berguna / membantu kalian bisa donasi ya untuk membantu biaya server.\nHave nice yayy...',
+          );
         } else {
           await send(client, message, msg.error.norm).then(async () => {
             await message.react(pReaction.failed);
@@ -870,6 +885,11 @@ const facecartoon = async (client, message, browser) => {
         if (face.status == 200) {
           const messageMedia = new MessageMedia('image/jpg', face.media);
           await send(client, message, messageMedia);
+          await send(
+            client,
+            message,
+            'Kalo kalian merasa BOT ini berguna / membantu kalian bisa donasi ya untuk membantu biaya server.\nHave nice yayy...',
+          );
         } else {
           await send(client, message, msg.error.norm).then(async () => {
             await message.react(pReaction.failed);
@@ -879,6 +899,71 @@ const facecartoon = async (client, message, browser) => {
     } else {
       const word =
         'Tidak ada gambar, pilih gambar lalu tambahkan pesan !facetoon atau !kartun';
+      reply(message, word).then(async () => {
+        await message.react(pReaction.failed);
+      });
+    }
+  }
+};
+
+//anime
+const fotoAnime = async (client, message, browser) => {
+  await message.react(pReaction.loading);
+  if (message.hasQuotedMsg) {
+    const qMsg = await message.getQuotedMessage();
+    if (qMsg.hasMedia) {
+      const media = await qMsg.downloadMedia();
+      reply(qMsg, msg.wait);
+
+      if (media) {
+        const foto = await scraper.anime(browser, media.data);
+
+        if (foto.status == 200) {
+          const messageMedia = new MessageMedia('image/jpg', foto.media);
+          await send(client, message, messageMedia);
+          await send(
+            client,
+            message,
+            'Kalo kalian merasa BOT ini berguna / membantu kalian bisa donasi ya untuk membantu biaya server.\nHave nice yayy...',
+          );
+        } else {
+          await send(client, message, msg.error.norm).then(async () => {
+            await message.react(pReaction.failed);
+          });
+        }
+      }
+    } else {
+      const word =
+        'Tidak ada gambar, pilih gambar lalu tambahkan pesan !jadianime atau !anime';
+      reply(message, word).then(async () => {
+        await message.react(pReaction.failed);
+      });
+    }
+  } else {
+    if (message.hasMedia) {
+      const media = await message.downloadMedia();
+      reply(message, msg.wait);
+
+      if (media) {
+        const foto = await scraper.anime(browser, media.data);
+
+        if (foto.status == 200) {
+          const messageMedia = new MessageMedia('image/jpg', foto.media);
+          await send(client, message, messageMedia);
+          await send(
+            client,
+            message,
+            'Kalo kalian merasa BOT ini berguna / membantu kalian bisa donasi ya untuk membantu biaya server.\nHave nice yayy...',
+          );
+        } else {
+          await send(client, message, msg.error.norm).then(async () => {
+            await message.react(pReaction.failed);
+          });
+        }
+      }
+    } else {
+      const word =
+        'Tidak ada gambar, pilih gambar lalu tambahkan pesan !jadianime atau !anime';
       reply(message, word).then(async () => {
         await message.react(pReaction.failed);
       });
@@ -901,6 +986,11 @@ const pup = async (client, message, browser) => {
     if (face.status == 200) {
       const messageMedia = new MessageMedia('image/jpg', face.media);
       await send(client, message, messageMedia);
+      await send(
+        client,
+        message,
+        'Kalo kalian merasa BOT ini berguna / membantu kalian bisa donasi ya untuk membantu biaya server.\nHave nice yayy...',
+      );
     } else {
       await send(client, message, 'Ada yg error!');
     }
@@ -950,6 +1040,7 @@ module.exports = {
   antikasar,
   faceswap,
   facecartoon,
+  fotoAnime,
   pup,
   badWord,
 };

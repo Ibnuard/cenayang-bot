@@ -35,6 +35,10 @@ const MENUS = [
         cmd: '!facetoon',
         desc: 'Mengubah wajah menjadi kartun',
       },
+      {
+        cmd: '!jadianime',
+        desc: 'Mengubah foto jadi anime',
+      },
     ],
   },
   {
