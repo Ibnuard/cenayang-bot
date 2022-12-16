@@ -15,7 +15,7 @@ moment.locale('id');
 //CLIENT INIT
 const client = new Client({
   authStrategy: new LocalAuth({
-    dataPath: './.wa_auth/',
+    dataPath: './wa_auth/',
   }),
   puppeteer: {
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
