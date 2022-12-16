@@ -1,0 +1,15 @@
+2022/12/16-08:10:33.683 7003 Creating DB /Users/Dev/WA BOT/cenayang-bot-wwebjs/.wa_auth/session/Default/IndexedDB/https_web.whatsapp.com_0.indexeddb.leveldb since it was missing.
+2022/12/16-08:10:33.775 7003 Reusing MANIFEST /Users/Dev/WA BOT/cenayang-bot-wwebjs/.wa_auth/session/Default/IndexedDB/https_web.whatsapp.com_0.indexeddb.leveldb/MANIFEST-000001
+2022/12/16-08:10:33.919 9807 Level-0 table #5: started
+2022/12/16-08:10:33.955 9807 Level-0 table #5: 6971 bytes OK
+2022/12/16-08:10:33.979 9807 Delete type=0 #3
+2022/12/16-08:10:33.986 9807 Manual compaction at level-0 from '\x00\x01\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00\x02\x00\x00\x00' @ 0 : 0; will stop at (end)
+2022/12/16-08:10:52.349 15e03 Level-0 table #7: started
+2022/12/16-08:10:52.399 15e03 Level-0 table #7: 1083410 bytes OK
+2022/12/16-08:10:52.436 15e03 Delete type=0 #4
+2022/12/16-08:11:49.116 15e03 Compacting 1@1 + 1@2 files
+2022/12/16-08:11:49.170 15e03 Generated table #8@1: 12265 keys, 555773 bytes
+2022/12/16-08:11:49.170 15e03 Compacted 1@1 + 1@2 files => 555773 bytes
+2022/12/16-08:11:49.224 15e03 compacted to: files[ 0 0 1 0 0 0 0 ]
+2022/12/16-08:11:49.224 15e03 Delete type=2 #7
+2022/12/16-08:11:49.224 15e03 Delete type=2 #5

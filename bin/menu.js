@@ -4,6 +4,7 @@ const {command} = require('.');
 const {checkStatusAntiKasar} = require('../func/group');
 const {dLog} = require('../tools/log');
 const bwordList = require('../database/group/katakasar.json');
+const {detectIfMention} = require('./command');
 
 const onMessageReceived = async (client, message, browser) => {
   // ex, format !sticker
@@ -20,9 +21,12 @@ const onMessageReceived = async (client, message, browser) => {
   const value = getMessage.replace(getMessage.split(' ')[0], '').trimStart();
   const extra_value = value.split(' '); //extra_value[0] extra_value[1]
 
+  //MENTIONED
+  await detectIfMention(client, message);
+
   //IF RECEIVE BADWORD
   if (chat.isGroup == true) {
-    if (bwordList.some(v => message.body.includes(v))) {
+    if (bwordList.some(v => message.body.toLowerCase().includes(v))) {
       const antikasar = checkStatusAntiKasar(message?.from);
 
       if (antikasar == true) {
@@ -133,6 +137,12 @@ const onMessageReceived = async (client, message, browser) => {
       break;
     case 'jadianime':
       return command.fotoAnime(client, message, browser, value);
+      break;
+    case 'everyone':
+      return command.tagAll(client, message);
+      break;
+    case 'tagAll':
+      return command.tagAll(client, message);
       break;
     case 'join':
       return command.joinGroupPremium(client, message, value);

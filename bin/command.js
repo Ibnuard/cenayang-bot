@@ -1,4 +1,4 @@
-const {MessageMedia} = require('whatsapp-web.js');
+const {MessageMedia, List, Buttons} = require('whatsapp-web.js');
 
 //NON PACKAGE
 const {
@@ -16,6 +16,8 @@ const {dLog} = require('../tools/log');
 const moment = require('moment');
 const {msg, pReaction, badwReaction} = require('./messages');
 const {antiKasarOn, antiKasarOff} = require('../func/group');
+const katabot = require('../database/group/katabot.json');
+const {randomInt} = require('../tools/utils');
 moment.locale('id');
 
 // ========================
@@ -703,39 +705,6 @@ const bye = async (client, message, value, chat) => {
   }
 };
 
-// =================================================
-//
-//
-//         fungsi bot owner
-//
-//
-// ==================================================
-
-//kirim ping
-const joinGroupPremium = async (client, message, value) => {
-  const groupUrl = value;
-  const inviteCode = groupUrl.replace('https://chat.whatsapp.com/', '');
-
-  const owner = config.owner;
-
-  if (message.from == owner) {
-    try {
-      await client.acceptInvite(inviteCode);
-      send(client, message, 'Bos join grup sukses! misi selesai!');
-    } catch (e) {
-      send(client, message, 'Bos join grup gagal! misi gagal!');
-    }
-  } else {
-    send(
-      client,
-      message,
-      'Ga boleh nakal yaa, perintah ini hanya boleh dilakuin sama owner ganteng!!',
-    );
-  }
-
-  //db.saveData('premium', message.from);
-};
-
 const faceswapHandler = async (client, message) => {
   await message.react(pReaction.loading);
   const tutor =
@@ -749,51 +718,49 @@ const faceswapHandler = async (client, message) => {
 };
 
 //faceswap
-const faceswap = async (client, message, browser, value, extra) => {
+const faceswap = async (client, message, browser) => {
   await message.react(pReaction.loading);
 
-  if (value) {
-    if (message.hasQuotedMsg) {
-      const quoted = await message.getQuotedMessage();
-      if (quoted.hasMedia) {
-        //do here
-        const result = await imageManipulation.faceSwap(
-          browser,
+  if (message.hasQuotedMsg) {
+    const quoted = await message.getQuotedMessage();
+    if (quoted.hasMedia) {
+      //do here
+      const result = await imageManipulation.faceSwap(
+        browser,
+        client,
+        message,
+        quoted,
+      );
+
+      if (result.message == 'SUCCESS') {
+        const messageMedia = new MessageMedia('image/jpg', result.data);
+        await send(client, message, messageMedia).then(async () => {
+          await message.react(pReaction.success);
+        });
+        await send(
           client,
           message,
-          quoted,
+          'Kalo kalian merasa BOT ini berguna / membantu kalian bisa donasi ya untuk membantu biaya server.\nHave nice yayy...',
         );
-
-        if (result.message == 'SUCCESS') {
-          const messageMedia = new MessageMedia('image/jpg', result.data);
-          await send(client, message, messageMedia).then(async () => {
-            await message.react(pReaction.success);
-          });
-          await send(
-            client,
-            message,
-            'Kalo kalian merasa BOT ini berguna / membantu kalian bisa donasi ya untuk membantu biaya server.\nHave nice yayy...',
-          );
-        } else {
-          await send(client, message, msg.error.norm).then(async () => {
-            await message.react(pReaction.failed);
-          });
-        }
       } else {
-        const word =
-          'Tidak ada foto, pilih foto lalu tambahkan caption !faceswap mulai';
-        reply(message, word).then(async () => {
+        await send(client, message, msg.error.norm).then(async () => {
           await message.react(pReaction.failed);
         });
       }
     } else {
       const word =
-        'Tidak ada foto yang di reply, silahkan reply foto dengan foto lain lalu gunakan perintah !faceswap mulai';
+        'Tidak ada foto, pilih foto lalu tambahkan caption !faceswap';
       reply(message, word).then(async () => {
         await message.react(pReaction.failed);
       });
+      return await faceswapHandler(client, message);
     }
   } else {
+    const word =
+      'Tidak ada foto yang di reply, silahkan reply foto dengan foto lain lalu gunakan perintah !faceswap';
+    reply(message, word).then(async () => {
+      await message.react(pReaction.failed);
+    });
     return await faceswapHandler(client, message);
   }
 };
@@ -928,6 +895,75 @@ const fotoAnime = async (client, message, browser) => {
   }
 };
 
+const tagAll = async (client, message) => {
+  await message.react(pReaction.loading);
+  const chat = await message.getChat();
+
+  if (chat.isGroup) {
+    let text = '';
+    let mentions = [];
+
+    for (let participant of chat.participants) {
+      const contact = await client.getContactById(participant.id._serialized);
+
+      mentions.push(contact);
+      text += `@${participant.id.user} \n`;
+    }
+
+    await chat.sendMessage(text, {mentions});
+    await message.react(pReaction.success);
+  } else {
+    send(client, message, 'Fitur ini hanya tersedia untuk grup!').then(
+      async () => {
+        await message.react(pReaction.info);
+      },
+    );
+  }
+};
+
+const detectIfMention = async (client, message) => {
+  const mentions = await message.getMentions();
+
+  for (let contact of mentions) {
+    if (contact.isMe) {
+      const rand = randomInt(0, katabot.length - 1);
+      const pilihKata = katabot[rand];
+      await reply(message, pilihKata);
+    }
+  }
+};
+
+// =================================================
+//
+//
+//         fungsi bot owner
+//
+//
+// ==================================================
+
+//kirim ping
+const joinGroupPremium = async (client, message, value) => {
+  const groupUrl = value;
+  const inviteCode = groupUrl.replace('https://chat.whatsapp.com/', '');
+
+  const owner = config.owner;
+
+  if (message.from == owner) {
+    try {
+      await client.acceptInvite(inviteCode);
+      send(client, message, 'Bos join grup sukses! misi selesai!');
+    } catch (e) {
+      send(client, message, 'Bos join grup gagal! misi gagal!');
+    }
+  } else {
+    send(
+      client,
+      message,
+      'Ga boleh nakal yaa, perintah ini hanya boleh dilakuin sama owner ganteng!!',
+    );
+  }
+};
+
 //load data
 const premiumList = (client, message) => {
   db.loadData('premium');
@@ -935,23 +971,14 @@ const premiumList = (client, message) => {
 
 //pup
 const pup = async (client, message, browser) => {
-  const media = await message.downloadMedia();
-
-  if (media) {
-    const face = await scraper.faceSwap(browser, media.data);
-
-    if (face.status == 200) {
-      const messageMedia = new MessageMedia('image/jpg', face.media);
-      await send(client, message, messageMedia);
-      await send(
-        client,
-        message,
-        'Kalo kalian merasa BOT ini berguna / membantu kalian bisa donasi ya untuk membantu biaya server.\nHave nice yayy...',
-      );
-    } else {
-      await send(client, message, 'Ada yg error!');
-    }
-  }
+  send(client, message, 'PUP');
+  let button = new Buttons(
+    'body',
+    [{body: 'bt1'}, {body: 'bt2'}, {body: 'bt3'}],
+    'title',
+    'footer',
+  );
+  client.sendMessage(message['from'], button);
 };
 
 //check if is admin
@@ -998,4 +1025,6 @@ module.exports = {
   badWord,
   bye,
   warnBye,
+  tagAll,
+  detectIfMention,
 };

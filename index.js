@@ -1,5 +1,5 @@
 const qrcode = require('qrcode-terminal');
-const {Client, LocalAuth} = require('whatsapp-web.js');
+const {Client, LocalAuth, LegacySessionAuth} = require('whatsapp-web.js');
 const {handler} = require('./bin');
 const {
   leaveGroup,
@@ -14,7 +14,9 @@ moment.locale('id');
 
 //CLIENT INIT
 const client = new Client({
-  //authStrategy: new LocalAuth(),
+  authStrategy: new LocalAuth({
+    dataPath: './.wa_auth/',
+  }),
   puppeteer: {
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
     executablePath:
@@ -28,8 +30,13 @@ client.on('qr', qr => {
   qrcode.generate(qr, {small: true});
 });
 
-client.on('disconnected', async reason => {
-  console.log('dissconnected : ' + reason);
+client.on('auth_failure', async message => {
+  console.log('AUTH FAIL ' + JSON.stringify(message));
+});
+
+// Save session values to the file upon successful auth
+client.on('authenticated', session => {
+  console.log('AUTH');
 });
 
 //INTIALIZE
