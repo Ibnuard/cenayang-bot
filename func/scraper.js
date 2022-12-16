@@ -1,10 +1,11 @@
 const userAgent = require('user-agents');
 const {randomInt} = require('../tools/utils');
 const fs = require('fs');
+const config = require('../config.json');
 
 //INSTAGRAM
 const igDownload = async (browser, url) => {
-  let BASE_URL = 'https://igram.io/id/story-saver';
+  let BASE_URL = config.igDownloader;
 
   const page = await browser.newPage();
 
@@ -60,7 +61,7 @@ const igDownload = async (browser, url) => {
 
 // FACESWAP
 const faceSwap = async (browser, input, target) => {
-  let BASE_URL = 'https://faceswapper.ai/';
+  let BASE_URL = config.faceSwap;
 
   const randName = `temp${randomInt(10000, 99999)}`;
 
@@ -146,7 +147,7 @@ const faceSwap = async (browser, input, target) => {
 
 //FACECARTOON
 const faceCartoon = async (browser, image) => {
-  let BASE_URL = 'https://animefilter.com/';
+  let BASE_URL = config.faceToon;
 
   let path = './temp/';
   let filename = `toon-${randomInt(10000, 99990)}.jpg`;
@@ -212,7 +213,7 @@ const faceCartoon = async (browser, image) => {
 
 //FOTO 2 ANIME
 const anime = async (browser, image) => {
-  let BASE_URL = 'https://h5.tu.qq.com/web/ai-2d/cartoon/index';
+  let BASE_URL = config.faceAnime;
 
   let path = './temp/';
   let filename = `anime-${randomInt(10000, 99999)}.jpg`;

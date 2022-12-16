@@ -18,6 +18,7 @@ const {msg, pReaction, badwReaction} = require('./messages');
 const {antiKasarOn, antiKasarOff} = require('../func/group');
 const katabot = require('../database/group/katabot.json');
 const {randomInt} = require('../tools/utils');
+const {MENUS} = require('../func/feature');
 moment.locale('id');
 
 // ========================
@@ -83,8 +84,32 @@ const donasi = async (client, message) => {
 //menu
 const menu = async (client, message) => {
   await message.react(pReaction.loading);
+  let button = new Buttons(
+    'CENAYANG BOT MENU',
+    [
+      {id: '!menuteks', body: 'Menu Teks'},
+      {id: '!menubutton', body: 'Menu Tombol'},
+    ],
+    'Pilih tipe menu',
+  );
+
+  await client.sendMessage(message.from, button);
+};
+
+//menu
+const menuTeks = async (client, message) => {
+  await message.react(pReaction.loading);
   const word = genMenu.listMenu();
   send(client, message, word).then(async () => {
+    await message.react(pReaction.success);
+  });
+};
+
+//menu tombol
+const menuTombol = async (client, message) => {
+  await message.react(pReaction.loading);
+  const list = MENUS;
+  send(client, message, list).then(async () => {
     await message.react(pReaction.success);
   });
 };
@@ -973,12 +998,24 @@ const premiumList = (client, message) => {
 const pup = async (client, message, browser) => {
   send(client, message, 'PUP');
   let button = new Buttons(
-    'body',
-    [{body: 'bt1'}, {body: 'bt2'}, {body: 'bt3'}],
-    'title',
-    'footer',
+    'CENAYANG BOT MENU',
+    [{body: 'Menu Teks'}, {body: 'Menu Tombol'}],
+    'Pilih tipe menu',
   );
-  client.sendMessage(message['from'], button);
+
+  let section = [
+    {
+      title: 'sectionTitle',
+      rows: [
+        {id: 'customId', title: 'ListItem2', description: 'desc'},
+        {title: 'ListItem2'},
+      ],
+    },
+  ];
+
+  let list = new List('body', 'List', section, 'title', 'footer');
+
+  client.sendMessage(message['from'], list);
 };
 
 //check if is admin

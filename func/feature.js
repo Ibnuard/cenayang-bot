@@ -1,124 +1,141 @@
 const MENUS = [
   {
-    category: 'Informasi Bot',
-    menu: [
+    title: 'Informasi Bot',
+    rows: [
       {
-        cmd: '!ping',
-        desc: 'Melakukan ping ke bot',
+        id: '!ping',
+        title: 'Ping',
+        description: 'Melakukan ping ke bot',
       },
       {
-        cmd: '!info',
-        desc: 'Mengetahui info bot',
+        id: '!info',
+        title: 'Info',
+        description: 'Mengetahui info bot',
       },
       {
-        cmd: '!donasi',
-        desc: 'Mengetahui info donasi',
+        title: '!donasi',
+        title: 'Donasi',
+        description: 'Mengetahui info donasi',
       },
       {
-        cmd: '!owner',
-        desc: 'Mengetahui info owner',
-      },
-    ],
-  },
-  {
-    category: 'Media dan Sticker',
-    menu: [
-      {
-        cmd: '!sticker',
-        desc: 'Membuat sticker dari gambar',
-      },
-      {
-        cmd: '!faceswap',
-        desc: 'Mengganti wajah dengan tokoh random',
-      },
-      {
-        cmd: '!facetoon',
-        desc: 'Mengubah wajah menjadi kartun',
-      },
-      {
-        cmd: '!jadianime',
-        desc: 'Mengubah foto jadi anime',
+        title: '!owner',
+        title: 'Owner',
+        description: 'Mengetahui info owner',
       },
     ],
   },
   {
-    category: 'Automation dan Kegunaan',
-    menu: [
+    title: 'Media dan Sticker',
+    rows: [
       {
-        cmd: '!ingetin',
-        desc: 'Membuat reminder atau pengingat',
+        id: '!sticker',
+        title: 'Sticker',
+        description: 'Membuat sticker dari gambar',
       },
       {
-        cmd: '!antikasar',
-        desc: 'Filter kata kata kasar',
-      },
-    ],
-  },
-  {
-    category: 'Download dari Sosmed',
-    menu: [
-      {
-        cmd: '!fb',
-        desc: 'Download video dari facebook',
+        id: '!faceswap',
+        title: 'Faceswap',
+        description: 'Mengganti wajah dengan tokoh random',
       },
       {
-        cmd: '!tt',
-        desc: 'Download video dari tiktok',
+        id: '!facetoon',
+        title: 'Facetoon',
+        description: 'Mengubah wajah menjadi kartun',
       },
       {
-        cmd: '!ig',
-        desc: 'Download post/reels/story dari Instagram',
-      },
-      {
-        cmd: '!ytmp4',
-        desc: 'Download video dari youtube',
-      },
-      {
-        cmd: '!ytmp3',
-        desc: 'Download audio dari youtube',
+        id: '!jadianime',
+        title: 'Jadi Anime',
+        description: 'Mengubah foto jadi anime',
       },
     ],
   },
   {
-    category: 'Teks dan Tulisan',
-    menu: [
+    title: 'Automation dan Kegunaan',
+    rows: [
       {
-        cmd: '!nulis',
-        desc: 'Ubah teks jadi nulis di kertas',
+        id: '!ingetin',
+        title: 'Ingetin',
+        description: 'Membuat reminder atau pengingat',
       },
       {
-        cmd: '!logo',
-        desc: 'Ubah teks jadi logo esports',
-      },
-      {
-        cmd: '!hartatahta',
-        desc: 'Buat teks harta tahta doinya',
+        id: '!antikasar',
+        title: 'Antikasar',
+        description: 'Filter kata kata kasar',
       },
     ],
   },
   {
-    category: 'Fitur Lainnya',
-    menu: [
+    title: 'Download dari Sosmed',
+    rows: [
       {
-        cmd: '!ssweb',
-        desc: 'Screenshoot website',
+        id: '!fb',
+        title: 'Facebook Downloader',
+        description: 'Download video dari facebook',
       },
       {
-        cmd: '!buatqr',
-        desc: 'Buat QRCode dari teks',
+        id: '!tt',
+        title: 'Tiktok Downloader',
+        description: 'Download video dari tiktok',
       },
       {
-        cmd: '!gempa',
-        desc: 'Data gempa BMKG',
+        id: '!ig',
+        title: 'Instagram',
+        description: 'Download post/reels/story dari Instagram',
+      },
+      {
+        id: '!ytmp4',
+        title: 'Youtube MP4 Downloader',
+        description: 'Download video dari youtube',
+      },
+      {
+        id: '!ytmp3',
+        title: 'Youtube MP3 Downloader',
+        description: 'Download audio dari youtube',
       },
     ],
   },
   {
-    category: 'Fitur Grup dan Admin',
-    menu: [
+    title: 'Teks dan Tulisan',
+    rows: [
       {
-        cmd: '!bye',
-        desc: 'Mengeluarkan BOT dari grup',
+        id: '!nulis',
+        title: 'Nulis',
+        description: 'Ubah teks jadi nulis di kertas',
+      },
+      {
+        id: '!logo',
+        title: 'Logo',
+        description: 'Ubah teks jadi logo esports',
+      },
+    ],
+  },
+  {
+    title: 'Fitur Lainnya',
+    rows: [
+      {
+        id: '!ssweb',
+        title: 'Screenshoot Website',
+        description: 'Screenshoot website',
+      },
+      {
+        id: '!buatqr',
+        title: 'Buat QR',
+        description: 'Buat QRCode dari teks',
+      },
+      {
+        id: '!gempa',
+        title: 'Gempa',
+        description: 'Data gempa BMKG terbaru',
+      },
+    ],
+  },
+  {
+    title: 'Fitur Grup dan Admin',
+    rows: [
+      {
+        id: '!bye',
+        title: 'Bye',
+        description: 'Mengeluarkan BOT dari grup',
       },
     ],
   },
@@ -134,7 +151,7 @@ const listMenu = () => {
     let temp = '';
 
     for (let i = 0; i < arr.length; i++) {
-      temp = temp + `_*${arr[i].cmd}*_\n    --> ${arr[i].desc}\n`;
+      temp = temp + `_*${arr[i].id}*_\n    --> ${arr[i].description}\n`;
     }
 
     return temp;
@@ -142,8 +159,7 @@ const listMenu = () => {
 
   for (let i = 0; i < MENUS.length; i++) {
     // menu\n
-    temp =
-      temp + `\n🔰 *${MENUS[i].category}* 🔰\n\n${_splitMenu(MENUS[i].menu)}`;
+    temp = temp + `\n🔰 *${MENUS[i].title}* 🔰\n\n${_splitMenu(MENUS[i].rows)}`;
   }
 
   return prefix + temp + endfix;
@@ -151,4 +167,5 @@ const listMenu = () => {
 
 module.exports = {
   listMenu,
+  MENUS,
 };

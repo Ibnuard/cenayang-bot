@@ -36,6 +36,11 @@ const onMessageReceived = async (client, message, browser) => {
     }
   }
 
+  if (message.hasQuotedMsg) {
+    const qMsg = await message.getQuotedMessage();
+    console.log(JSON.stringify(message));
+  }
+
   //console.log(`from ${message?.from} -> ${cmd} -> ${value} ${extra_value}`);
   dLog(cmd, message.from, false, `${value} || ${extra_value}`);
 

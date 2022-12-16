@@ -1,2 +1,3 @@
-2022/12/16-08:10:32.880 7003 Creating DB /Users/Dev/WA BOT/cenayang-bot-wwebjs/.wa_auth/session/Default/Session Storage since it was missing.
-2022/12/16-08:10:32.936 7003 Reusing MANIFEST /Users/Dev/WA BOT/cenayang-bot-wwebjs/.wa_auth/session/Default/Session Storage/MANIFEST-000001
+2022/12/16-09:01:25.436 ef03 Reusing MANIFEST /Users/Dev/WA BOT/cenayang-bot-wwebjs/.wa_auth/session/Default/Session Storage/MANIFEST-000001
+2022/12/16-09:01:25.437 ef03 Recovering log #3
+2022/12/16-09:01:25.437 ef03 Reusing old log /Users/Dev/WA BOT/cenayang-bot-wwebjs/.wa_auth/session/Default/Session Storage/000003.log 
