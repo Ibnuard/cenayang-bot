@@ -9,6 +9,14 @@ const groupTask = func => {
   });
 };
 
+//group cron
+const quotaTask = func => {
+  return cron.schedule('0 0 */12 * * *', () => {
+    dLog('JOB', 'SYSTEM', false, 'RUNNING QUOTA JOB');
+    func();
+  });
+};
+
 //reminder cron
 const reminderTask = func => {
   return cron.schedule('* * * * *', () => {
@@ -28,6 +36,7 @@ const botTask = func => {
 
 module.exports = {
   groupTask,
+  quotaTask,
   reminderTask,
   botTask,
 };

@@ -151,7 +151,7 @@ const listMenu = () => {
     let temp = '';
 
     for (let i = 0; i < arr.length; i++) {
-      temp = temp + `_*${arr[i].id}*_\n    --> ${arr[i].description}\n`;
+      temp = temp + `_*${arr[i].id}*_\n-> ${arr[i].description}\n`;
     }
 
     return temp;

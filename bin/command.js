@@ -10,6 +10,7 @@ const {
   reminder,
   scraper,
   imageManipulation,
+  user,
 } = require('../func');
 const config = require('../config.json');
 const {dLog} = require('../tools/log');
@@ -75,7 +76,7 @@ const owner = async (client, message) => {
 const donasi = async (client, message) => {
   await message.react(pReaction.loading);
   const word =
-    'Halo Gaes untuk kalian yang mau donasi / menambahkan bot ini ke grup kalian bisa kirim lewat aplikasi berikut ya : \n\n*OVO : 085741894533*\n*DANA : 085741894533*\n\nAtau kalian bisa hubungin telegram owner ya.\nDonasi kalian sangat membantu untuk biaya server, maklum ownernya sobat misqueen hihi.\n\nHave nice yayyyy!!\nTerima kasih.';
+    'Halo Gaes untuk kalian yang mau donasi / menambahkan bot ini ke grup kalian bisa kirim lewat aplikasi berikut ya : \n\n*OVO : 085741894533*\n*DANA : 085741894533*\n\nAtau kalian bisa hubungin t.me/bluetterflys di telegram ya.\nDonasi kalian sangat membantu untuk biaya server, maklum ownernya sobat misqueen hihi.\n\nHave nice yayyyy!!\nTerima kasih.';
   send(client, message, word).then(async () => {
     await message.react(pReaction.success);
   });
@@ -268,70 +269,6 @@ const downInsta = async (browser, client, message, value) => {
     }
   } else {
     send(client, message, 'Cara penggunaan : _!ig <urlinstagram>_').then(
-      async () => {
-        await message.react(pReaction.info);
-      },
-    );
-  }
-};
-
-//download tiktok wm
-const downIGstory = async (client, message, value, extra) => {
-  await message.react(pReaction.loading);
-  if (value) {
-    reply(
-      message,
-      `${msg.wait}\n gunakan perintah _!igs usernameIg_ untuk mendownload semua story yang ada.`,
-    );
-    downloader
-      .instaStory(extra.length > 1 ? extra[0] : value)
-      .then(async ({result}) => {
-        if (!result?.error) {
-          if (extra?.length) {
-            const video = result.story?.itemlist[extra[1] - 1]?.urlDownload;
-            const media = await MessageMedia.fromUrl(video, {
-              unsafeMime: true,
-              filename: `story-${result?.owner_username}-${extra}.${
-                result.story?.itemlist[extra]?.type == 'video' ? 'mp4' : 'jpeg'
-              }`,
-            });
-            send(client, message, media, {sendMediaAsDocument: true}).then(
-              async () => {
-                await message.react(pReaction.success);
-              },
-            );
-          } else {
-            for (let i = 0; i < result.story.itemlist.length; i++) {
-              const video = result.story?.itemlist[i]?.urlDownload;
-              const media = await MessageMedia.fromUrl(video, {
-                unsafeMime: true,
-                filename: `story-${result?.owner_username}-${i}.${
-                  result.story?.itemlist[extra]?.type == 'video'
-                    ? 'mp4'
-                    : 'jpeg'
-                }`,
-              });
-              send(client, message, media, {sendMediaAsDocument: true}).then(
-                async () => {
-                  await message.react(pReaction.success);
-                },
-              );
-            }
-          }
-        } else {
-          send(client, message, msg.error.norm).then(async () => {
-            await message.react(pReaction.failed);
-          });
-        }
-      })
-      .catch(err => {
-        dLog('IGS', message.from, true, 'ERR : ' + err);
-        send(client, message, msg.error.norm).then(async () => {
-          await message.react(pReaction.failed);
-        });
-      });
-  } else {
-    send(client, message, 'Cara penggunaan : _!igs linkvideo_').then(
       async () => {
         await message.react(pReaction.info);
       },
@@ -664,7 +601,6 @@ const antikasar = (client, message, value, chat) => {
 //load data
 const badWord = (client, message) => {
   const reaction = badwReaction();
-  console.log('selected r : ' + reaction);
   reply(message, reaction);
 };
 
@@ -799,12 +735,14 @@ const facecartoon = async (client, message, browser) => {
       const media = await qMsg.downloadMedia();
       reply(qMsg, msg.wait);
 
-      if (media) {
-        const face = await scraper.faceCartoon(browser, media.data);
+      if (media?.data) {
+        const face = await scraper.faceCartoon(browser, media?.data);
 
         if (face.status == 200) {
           const messageMedia = new MessageMedia('image/jpg', face.media);
-          await send(client, message, messageMedia);
+          await send(client, message, messageMedia).then(async () => {
+            await message.react(pReaction.success);
+          });
           await send(
             client,
             message,
@@ -815,6 +753,12 @@ const facecartoon = async (client, message, browser) => {
             await message.react(pReaction.failed);
           });
         }
+      } else {
+        await send(client, message, 'Maaf tolong kirim ulang gambarnya!').then(
+          async () => {
+            await message.react(pReaction.failed);
+          },
+        );
       }
     } else {
       const word =
@@ -833,7 +777,9 @@ const facecartoon = async (client, message, browser) => {
 
         if (face.status == 200) {
           const messageMedia = new MessageMedia('image/jpg', face.media);
-          await send(client, message, messageMedia);
+          await send(client, message, messageMedia).then(async () => {
+            await message.react(pReaction.success);
+          });
           await send(
             client,
             message,
@@ -858,18 +804,30 @@ const facecartoon = async (client, message, browser) => {
 //anime
 const fotoAnime = async (client, message, browser) => {
   await message.react(pReaction.loading);
+  const isPremium = await user.checkIsUserPremium(message.from);
+  const chat = await message.getChat();
+  const isGroup = await chat.isGroup;
+
+  if (!isGroup) {
+    if (!isPremium) {
+      return premiumOnly(client, message);
+    }
+  }
+
   if (message.hasQuotedMsg) {
-    const qMsg = await message.getQuotedMessage();
-    if (qMsg.hasMedia) {
-      const media = await qMsg.downloadMedia();
+    const quoted = await message.getQuotedMessage();
+    if (quoted.hasMedia == true) {
+      const media = await quoted.downloadMedia();
       reply(qMsg, msg.wait);
 
-      if (media) {
-        const foto = await scraper.anime(browser, media.data);
+      if (media?.data) {
+        const foto = await scraper.anime(browser, media?.data);
 
         if (foto.status == 200) {
           const messageMedia = new MessageMedia('image/jpg', foto.media);
-          await send(client, message, messageMedia);
+          await send(client, message, messageMedia).then(async () => {
+            await message.react(pReaction.success);
+          });
           await send(
             client,
             message,
@@ -898,7 +856,9 @@ const fotoAnime = async (client, message, browser) => {
 
         if (foto.status == 200) {
           const messageMedia = new MessageMedia('image/jpg', foto.media);
-          await send(client, message, messageMedia);
+          await send(client, message, messageMedia).then(async () => {
+            message.react(pReaction.success);
+          });
           await send(
             client,
             message,
@@ -958,6 +918,29 @@ const detectIfMention = async (client, message) => {
   }
 };
 
+//QUOTA EXCEED
+const quotaExceed = async (client, message) => {
+  const word =
+    'Maaf kesempatan kamu hari ini sudah habis buat pake bot ini.' +
+    '\nKamu punya 30 kesempatan / hari untuk menggunakan fitur bot ini' +
+    '\n\nKesempatan akan di reset setiap jam 12 malam' +
+    '\n\nDaftar menjadi premium dengan cara donasi minimal 20k untuk mendapatkan semua fitur bot tanpa batasan tiap hari.';
+  await send(client, message, word).then(async () => {
+    return await donasi(client, message);
+  });
+};
+
+//QUOTA EXCEED
+const premiumOnly = async (client, message) => {
+  const word =
+    'Maaf fitur ini hanya untuk user premium.' +
+    '\n\nDaftar menjadi premium dengan cara donasi minimal 20k untuk mendapatkan semua fitur bot tanpa batasan tiap hari.';
+  await send(client, message, word).then(async () => {
+    await message.react(pReaction.info);
+    return await donasi(client, message);
+  });
+};
+
 // =================================================
 //
 //
@@ -979,6 +962,29 @@ const joinGroupPremium = async (client, message, value) => {
       send(client, message, 'Bos join grup sukses! misi selesai!');
     } catch (e) {
       send(client, message, 'Bos join grup gagal! misi gagal!');
+    }
+  } else {
+    send(
+      client,
+      message,
+      'Ga boleh nakal yaa, perintah ini hanya boleh dilakuin sama owner ganteng!!',
+    );
+  }
+};
+
+//load data
+const addUserPremium = async (client, message, value) => {
+  const owner = config.owner;
+
+  const serialized = `${value}@c.us`;
+
+  if (message.from == owner) {
+    const result = await user.addUserToPremium(serialized);
+
+    if (result == 'SUCCESS') {
+      send(client, message, 'Bos tambah user premium sukses! misi selesai!');
+    } else {
+      send(client, message, 'Udah premium bos');
     }
   } else {
     send(
@@ -1039,10 +1045,10 @@ module.exports = {
   owner,
   sticker,
   menu,
+  menuTeks,
   downFB,
   downTik,
   downInsta,
-  downIGstory,
   downYT,
   joinGroupPremium,
   premiumList,
@@ -1064,4 +1070,6 @@ module.exports = {
   warnBye,
   tagAll,
   detectIfMention,
+  quotaExceed,
+  addUserPremium,
 };

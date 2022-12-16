@@ -9,6 +9,7 @@ const {
 const {job} = require('./tools');
 const moment = require('moment');
 const {checkReminderTime} = require('./func/reminder');
+const {user} = require('./func');
 
 moment.locale('id');
 
@@ -65,7 +66,7 @@ client.on('ready', () => {
     })
     .start();
 
-  //cron(() => checkGroupStatus(client), 600000, 'Check Group Premium Validity');
+  job.quotaTask(() => user.resetUserQuota()).start();
 });
 
 //ON JOIN GROUP

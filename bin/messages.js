@@ -45,10 +45,10 @@ const msg = {
 };
 
 const pReaction = {
-  loading: '⏳',
-  success: '✅',
-  failed: '❌',
-  info: '⚠️',
+  loading: '😶',
+  success: '👌',
+  failed: '🙁',
+  info: '🤔',
 };
 
 const badwReaction = () => {

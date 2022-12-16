@@ -218,7 +218,9 @@ const anime = async (browser, image) => {
   let path = './temp/';
   let filename = `anime-${randomInt(10000, 99999)}.jpg`;
 
-  const page = await browser.newPage();
+  const context = await browser.createIncognitoBrowserContext();
+
+  const page = await context.newPage();
 
   const response = await page.goto(BASE_URL, {waitUntil: 'networkidle0'});
 
@@ -251,6 +253,17 @@ const anime = async (browser, image) => {
     }
 
     await page.click('#page-container > div > div._action-panel_ewapq_64');
+
+    const album =
+      (await page.$(
+        '#page-container > div > div._modal_f95ly_1 > div > div > div',
+      )) || '';
+
+    if (album) {
+      console.log('ada');
+    } else {
+      console.log('ga ada');
+    }
 
     await page.waitForSelector(
       '#page-container > div > div._modal_f95ly_1 > div > div > div',

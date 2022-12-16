@@ -1,6 +1,4 @@
 const {scraper} = require('.');
-const {info} = require('../bin/command');
-const {loadData, saveData} = require('./storage');
 
 //handle faceSwap session
 const faceSwap = async (browser, client, message, quoted) => {
@@ -13,6 +11,11 @@ const faceSwap = async (browser, client, message, quoted) => {
     return {
       message: 'SUCCESS',
       data: face.media,
+    };
+  } else if (face.error == 'NO_MEDIA') {
+    return {
+      message: 'NO_MEDIA',
+      data: null,
     };
   } else {
     return {

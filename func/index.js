@@ -7,3 +7,4 @@ exports.misc = require('./misc');
 exports.reminder = require('./reminder');
 exports.scraper = require('./scraper');
 exports.imageManipulation = require('./image');
+exports.user = require('./user');
