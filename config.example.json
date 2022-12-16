@@ -1,4 +1,8 @@
 {
-  "vhtear": "apikey",
-  "owner": "ownerphonenumber"
+  "vhtear": "apiKey",
+  "owner": "ownerPhoneNumber",
+  "allDownloader": "base_url",
+  "faceSwap": "base_url",
+  "faceToon": "base_url",
+  "faceAnime": "base_url"
 }

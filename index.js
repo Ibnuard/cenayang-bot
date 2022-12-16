@@ -37,12 +37,12 @@ client.on('auth_failure', async message => {
 
 // Save session values to the file upon successful auth
 client.on('authenticated', session => {
-  console.log('AUTH');
+  console.log('AUTH SUCCESS!');
 });
 
 //INTIALIZE
 client.on('ready', () => {
-  console.log('Client is ready!');
+  console.log('CLIENT READY!');
 
   //GROUP CHECK
   job.groupTask(() => checkGroupStatus(client)).start();
