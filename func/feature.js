@@ -3,22 +3,22 @@ const MENUS = [
     title: 'Informasi Bot',
     rows: [
       {
-        id: '!ping',
+        id: 'ping',
         title: 'Ping',
         description: 'Melakukan ping ke bot',
       },
       {
-        id: '!info',
+        id: 'info',
         title: 'Info',
         description: 'Mengetahui info bot',
       },
       {
-        title: '!donasi',
+        id: 'donasi',
         title: 'Donasi',
         description: 'Mengetahui info donasi',
       },
       {
-        title: '!owner',
+        id: 'owner',
         title: 'Owner',
         description: 'Mengetahui info owner',
       },
@@ -28,22 +28,22 @@ const MENUS = [
     title: 'Media dan Sticker',
     rows: [
       {
-        id: '!sticker',
+        id: 'sticker',
         title: 'Sticker',
         description: 'Membuat sticker dari gambar',
       },
       {
-        id: '!faceswap',
+        id: 'faceswap',
         title: 'Faceswap',
         description: 'Mengganti wajah dengan tokoh random',
       },
       {
-        id: '!facetoon',
+        id: 'facetoon',
         title: 'Facetoon',
         description: 'Mengubah wajah menjadi kartun',
       },
       {
-        id: '!jadianime',
+        id: 'jadianime',
         title: 'Jadi Anime',
         description: 'Mengubah foto jadi anime',
       },
@@ -53,44 +53,20 @@ const MENUS = [
     title: 'Automation dan Kegunaan',
     rows: [
       {
-        id: '!ingetin',
+        id: 'dl',
+        title: 'Download Social Media',
+        description:
+          'Download dari semua social media (Instagram, Facebook, TikTok, Youtube, Twitter) ',
+      },
+      {
+        id: 'ingetin',
         title: 'Ingetin',
         description: 'Membuat reminder atau pengingat',
       },
       {
-        id: '!antikasar',
+        id: 'antikasar',
         title: 'Antikasar',
         description: 'Filter kata kata kasar',
-      },
-    ],
-  },
-  {
-    title: 'Download dari Sosmed',
-    rows: [
-      {
-        id: '!fb',
-        title: 'Facebook Downloader',
-        description: 'Download video dari facebook',
-      },
-      {
-        id: '!tt',
-        title: 'Tiktok Downloader',
-        description: 'Download video dari tiktok',
-      },
-      {
-        id: '!ig',
-        title: 'Instagram',
-        description: 'Download post/reels/story dari Instagram',
-      },
-      {
-        id: '!ytmp4',
-        title: 'Youtube MP4 Downloader',
-        description: 'Download video dari youtube',
-      },
-      {
-        id: '!ytmp3',
-        title: 'Youtube MP3 Downloader',
-        description: 'Download audio dari youtube',
       },
     ],
   },
@@ -98,12 +74,12 @@ const MENUS = [
     title: 'Teks dan Tulisan',
     rows: [
       {
-        id: '!nulis',
+        id: 'nulis',
         title: 'Nulis',
         description: 'Ubah teks jadi nulis di kertas',
       },
       {
-        id: '!logo',
+        id: 'logo',
         title: 'Logo',
         description: 'Ubah teks jadi logo esports',
       },
@@ -113,17 +89,17 @@ const MENUS = [
     title: 'Fitur Lainnya',
     rows: [
       {
-        id: '!ssweb',
+        id: 'ssweb',
         title: 'Screenshoot Website',
         description: 'Screenshoot website',
       },
       {
-        id: '!buatqr',
+        id: 'buatqr',
         title: 'Buat QR',
         description: 'Buat QRCode dari teks',
       },
       {
-        id: '!gempa',
+        id: 'gempa',
         title: 'Gempa',
         description: 'Data gempa BMKG terbaru',
       },
@@ -133,7 +109,7 @@ const MENUS = [
     title: 'Fitur Grup dan Admin',
     rows: [
       {
-        id: '!bye',
+        id: 'bye',
         title: 'Bye',
         description: 'Mengeluarkan BOT dari grup',
       },
@@ -141,7 +117,7 @@ const MENUS = [
   },
 ];
 
-const listMenu = () => {
+const listMenu = simbol => {
   const prefix = '*LIST PERINTAH CENAYANG BOT V1.0*\n';
   const endfix =
     '\nNote:\nKalo dirasa bot ini keren / membantu kalian bisa berdonasi yaa, kasihan ownernya sobat misqueen hihi.. \n\nLove you...';
@@ -151,7 +127,7 @@ const listMenu = () => {
     let temp = '';
 
     for (let i = 0; i < arr.length; i++) {
-      temp = temp + `_*${arr[i].id}*_\n-> ${arr[i].description}\n`;
+      temp = temp + `_*${simbol}${arr[i].id}*_\n↳ ${arr[i].description}\n\n`;
     }
 
     return temp;

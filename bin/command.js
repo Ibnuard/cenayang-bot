@@ -2,7 +2,6 @@ const {MessageMedia, List, Buttons} = require('whatsapp-web.js');
 
 //NON PACKAGE
 const {
-  downloader,
   genMenu,
   db,
   text,
@@ -11,15 +10,15 @@ const {
   scraper,
   imageManipulation,
   user,
+  group,
 } = require('../func');
 const config = require('../config.json');
 const {dLog} = require('../tools/log');
 const moment = require('moment');
 const {msg, pReaction, badwReaction} = require('./messages');
-const {antiKasarOn, antiKasarOff} = require('../func/group');
 const katabot = require('../database/group/katabot.json');
 const {randomInt} = require('../tools/utils');
-const {MENUS} = require('../func/feature');
+const {utils} = require('../tools');
 moment.locale('id');
 
 // ========================
@@ -98,9 +97,9 @@ const menu = async (client, message) => {
 };
 
 //menu
-const menuTeks = async (client, message) => {
+const menuTeks = async (client, message, prefix) => {
   await message.react(pReaction.loading);
-  const word = genMenu.listMenu();
+  const word = genMenu.listMenu(prefix);
   send(client, message, word).then(async () => {
     await message.react(pReaction.success);
   });
@@ -109,7 +108,7 @@ const menuTeks = async (client, message) => {
 //menu tombol
 const menuTombol = async (client, message) => {
   await message.react(pReaction.loading);
-  const list = MENUS;
+  const list = genMenu.MENUS;
   send(client, message, list).then(async () => {
     await message.react(pReaction.success);
   });
@@ -122,7 +121,6 @@ const sticker = async (client, message) => {
     const qMsg = await message.getQuotedMessage();
     if (qMsg.hasMedia) {
       const media = await qMsg.downloadMedia();
-      reply(qMsg, msg.wait);
 
       if (media) {
         send(client, qMsg, media, {
@@ -130,7 +128,7 @@ const sticker = async (client, message) => {
           stickerAuthor: 'CenayangBOT',
           stickerName: 'cenAyangSticker',
         }).then(async () => {
-          await message.react(pReaction.success);
+          await onCommandStatus(client, message, 'success');
         });
       }
     } else {
@@ -145,7 +143,6 @@ const sticker = async (client, message) => {
     await message.react(pReaction.loading);
     if (message.hasMedia) {
       const media = await message.downloadMedia();
-      reply(message, msg.wait);
 
       if (media) {
         send(client, message, media, {
@@ -153,7 +150,7 @@ const sticker = async (client, message) => {
           stickerAuthor: 'CenayangBOT',
           stickerName: 'cenAyangSticker',
         }).then(async () => {
-          await message.react(pReaction.success);
+          await onCommandStatus(client, message, 'success');
         });
       }
     } else {
@@ -167,148 +164,50 @@ const sticker = async (client, message) => {
   }
 };
 
-//download video fb
-const downFB = async (client, message, value) => {
+//download all media
+const allMediaDownload = async (client, message, value, browser) => {
   await message.react(pReaction.loading);
-  if (value) {
-    reply(message, msg.wait);
-    downloader
-      .fb(value)
-      .then(async ({result}) => {
-        const video = await result?.VideoUrl;
-        const media = await MessageMedia.fromUrl(video, {
-          unsafeMime: true,
-          filename: 'video.mp4',
-        });
-        await send(client, message, media, {sendMediaAsDocument: true}).then(
-          async () => {
-            await message.react(pReaction.success);
-          },
-        );
-      })
-      .catch(err => {
-        dLog('FACEBOOK', message.from, true, 'ERR : ' + err);
-        send(client, message, msg.error.norm).then(async () => {
-          await message.react(pReaction.failed);
-        });
-      });
-  } else {
-    send(
+
+  if (!value) {
+    return send(
       client,
       message,
-      'Tidak ada url facebook terdeteksi,\n_contoh: !fb linkvideo_',
+      'Cara penggunaan : _!dl <link ig/igstory/fb/tiktok>_',
     ).then(async () => {
-      await message.react(pReaction.failed);
+      await message.react(pReaction.info);
     });
   }
-};
 
-//download tiktok wm
-const downTik = async (client, message, value) => {
-  await message.react(pReaction.loading);
-  if (value) {
-    reply(message, msg.wait);
-    downloader
-      .tik(value)
-      .then(async ({result}) => {
-        const video = result?.video;
-        const media = await MessageMedia.fromUrl(video, {
-          filename: 'tiktok.mp4',
+  try {
+    const social = await scraper.allDownloader(browser, value);
+    if (social.status == 200) {
+      social.media.forEach(async (item, index) => {
+        const media = await MessageMedia.fromUrl(item.link, {
           unsafeMime: true,
+          filename: item.filename,
         });
-        send(client, message, media).then(async () => {
-          await message.react(pReaction.success);
-        });
-      })
-      .catch(err => {
-        dLog('TIKTOK', message.from, true, 'ERR : ' + err);
-        send(client, message, msg.error.norm).then(async () => {
-          await message.react(pReaction.failed);
-        });
-      });
-  } else {
-    send(client, message, 'Cara penggunaan : _!tt linkvideo_').then(
-      async () => {
-        await message.react(pReaction.info);
-      },
-    );
-  }
-};
 
-//download tiktok wm
-const downInsta = async (browser, client, message, value) => {
-  await message.react(pReaction.loading);
-  if (value) {
-    reply(message, msg.wait);
-
-    const isInstagramURL =
-      /(?:https?:)?\/\/(?:www\.)?(?:instagram\.com|instagr\.am)\//.test(value);
-
-    if (isInstagramURL) {
-      const ig = await scraper.igDownload(browser, value);
-
-      if (ig?.media) {
-        for (links in ig?.media) {
-          const media = await MessageMedia.fromUrl(ig?.media[links], {
-            unsafeMime: true,
-          });
-
-          await send(client, message, media).then(async () => {
-            await message.react(pReaction.success);
-          });
+        if (media) {
+          await client
+            .sendMessage(message.from, media, {
+              caption: 'Downloaded by Cenayang BOT',
+              sendMediaAsDocument:
+                utils.toMB(media.filesize) >= 15 ? true : false,
+            })
+            .then(async () => {
+              if (index == social.media.length - 1) {
+                await onCommandStatus(client, message, 'success');
+              }
+            });
         }
-      } else {
-        send(client, message, msg.error.norm).then(async () => {
-          await message.react(pReaction.failed);
-        });
-      }
+      });
     } else {
-      send(client, message, 'Url instagram tidak valid').then(async () => {
-        await message.react(pReaction.info);
-      });
+      console.log(JSON.stringify(social));
+      await onCommandStatus(client, message, 'failed');
     }
-  } else {
-    send(client, message, 'Cara penggunaan : _!ig <urlinstagram>_').then(
-      async () => {
-        await message.react(pReaction.info);
-      },
-    );
-  }
-};
-
-//download youtube
-const downYT = async (client, message, type, value) => {
-  await message.react(pReaction.loading);
-  if (value) {
-    reply(message, msg.wait);
-    downloader
-      .ytdl(value)
-      .then(async ({result}) => {
-        const video = await result?.UrlVideo;
-        const audio = await result?.UrlMp3;
-
-        const media = await MessageMedia.fromUrl(type == 'au' ? audio : video, {
-          unsafeMime: true,
-          filename: `${result.title}.${type == 'au' ? 'mp3' : 'mp4'}`,
-        });
-        await send(client, message, media, {sendMediaAsDocument: true}).then(
-          async () => {
-            await message.react(pReaction.success);
-          },
-        );
-      })
-      .catch(err => {
-        dLog('YOUTUBE', message.from, true, 'ERR : ' + err);
-        send(client, message, msg.error.norm).then(async () => {
-          await message.react(pReaction.failed);
-        });
-      });
-  } else {
-    send(client, message, 'Cara penggunaan : _!ytmp4 linkvideo_').then(
-      async () => {
-        await message.react(pReaction.info);
-      },
-    );
+  } catch (error) {
+    console.log(error);
+    await onCommandStatus(client, message, 'failed');
   }
 };
 
@@ -316,7 +215,6 @@ const downYT = async (client, message, type, value) => {
 const txToNulis = async (client, message, value) => {
   await message.react(pReaction.loading);
   if (value) {
-    reply(message, msg.wait);
     const url = text.nulis(value);
     const media = await MessageMedia.fromUrl(url, {
       unsafeMime: true,
@@ -337,7 +235,6 @@ const txToNulis = async (client, message, value) => {
 const txToQR = async (client, message, value) => {
   await message.react(pReaction.loading);
   if (value) {
-    reply(message, msg.wait);
     const url = text.qrcode(value);
     const media = await MessageMedia.fromUrl(url, {
       unsafeMime: true,
@@ -358,7 +255,6 @@ const txToQR = async (client, message, value) => {
 const ssWeb = async (client, message, value) => {
   await message.react(pReaction.loading);
   if (value) {
-    reply(message, msg.wait);
     const url = misc.ssWeb(value);
     const media = await MessageMedia.fromUrl(url, {
       unsafeMime: true,
@@ -379,7 +275,6 @@ const ssWeb = async (client, message, value) => {
 const txToLogoEsp = async (client, message, value) => {
   await message.react(pReaction.loading);
   if (value) {
-    reply(message, msg.wait);
     const url = text.logoEsp(value);
     const media = await MessageMedia.fromUrl(url, {
       unsafeMime: true,
@@ -399,28 +294,22 @@ const txToLogoEsp = async (client, message, value) => {
 //chord
 const hitung = async (client, message, value) => {
   await message.react(pReaction.loading);
-  if (value) {
-    misc
-      .hitung(value)
-      .then(async ({result}) => {
-        if (result.data) {
-          reply(message, `${result?.data}\n\n${result?.info}`).then(
-            async () => {
-              await message.react(pReaction.success);
-            },
-          );
-        }
-      })
-      .catch(err => {
-        dLog('CALCULATOR', message.from, true, 'ERR : ' + err);
-        send(client, message, '_Ada masalah nih, mohon coba lagi ya!_').then(
-          async () => {
-            await message.react(pReaction.failed);
-          },
-        );
-      });
+  const result = misc.calculator(value);
+  if (result !== 'NOT_VALID') {
+    reply(message, `${value}=${result}`).then(async () => {
+      await message.react(pReaction.success);
+    });
   } else {
-    send(client, message, 'Cara penggunaan : _=10*5:4+2-1_').then(async () => {
+    const word =
+      'Cara penggunaan fitur kalkulator' +
+      '\n\nGunakan prefix = untuk menggunakan fitur kalkulator.' +
+      '\n\nSimbol : ' +
+      '\n\n+ untuk operasi penjumlahan' +
+      '\n- untuk operasi pengurangan' +
+      '\n/ untuk operasi pembagian' +
+      '\n* untuk operasi perkalian' +
+      '\n\nContoh : =10*5/2+2-10';
+    send(client, message, word).then(async () => {
       await message.react(pReaction.info);
     });
   }
@@ -428,7 +317,7 @@ const hitung = async (client, message, value) => {
 
 const gempa = async (client, message) => {
   await message.react(pReaction.loading);
-  reply(message, msg.wait);
+
   misc
     .gempa()
     .then(async ({result}) => {
@@ -540,7 +429,7 @@ const antikasar = (client, message, value, chat) => {
     if (admin) {
       if (value) {
         if (value == 'on') {
-          const result = antiKasarOn(message.from);
+          const result = group.antiKasarOn(message.from);
           if (result == 'ADDED') {
             send(client, message, 'Fitur Anti Kasar *ON*').then(async () => {
               await message.react(pReaction.success);
@@ -555,7 +444,7 @@ const antikasar = (client, message, value, chat) => {
             });
           }
         } else {
-          const result = antiKasarOff(message.from);
+          const result = group.antiKasarOff(message.from);
 
           if (result == 'REMOVED') {
             send(client, message, 'Fitur Anti Kasar *OFF*').then(async () => {
@@ -686,6 +575,7 @@ const faceswap = async (client, message, browser) => {
     const quoted = await message.getQuotedMessage();
     if (quoted.hasMedia) {
       //do here
+
       const result = await imageManipulation.faceSwap(
         browser,
         client,
@@ -733,7 +623,6 @@ const facecartoon = async (client, message, browser) => {
     const qMsg = await message.getQuotedMessage();
     if (qMsg.hasMedia) {
       const media = await qMsg.downloadMedia();
-      reply(qMsg, msg.wait);
 
       if (media?.data) {
         const face = await scraper.faceCartoon(browser, media?.data);
@@ -770,7 +659,6 @@ const facecartoon = async (client, message, browser) => {
   } else {
     if (message.hasMedia) {
       const media = await message.downloadMedia();
-      reply(message, msg.wait);
 
       if (media) {
         const face = await scraper.faceCartoon(browser, media.data);
@@ -818,7 +706,6 @@ const fotoAnime = async (client, message, browser) => {
     const quoted = await message.getQuotedMessage();
     if (quoted.hasMedia == true) {
       const media = await quoted.downloadMedia();
-      reply(qMsg, msg.wait);
 
       if (media?.data) {
         const foto = await scraper.anime(browser, media?.data);
@@ -849,7 +736,6 @@ const fotoAnime = async (client, message, browser) => {
   } else {
     if (message.hasMedia) {
       const media = await message.downloadMedia();
-      reply(message, msg.wait);
 
       if (media) {
         const foto = await scraper.anime(browser, media.data);
@@ -1001,28 +887,25 @@ const premiumList = (client, message) => {
 };
 
 //pup
-const pup = async (client, message, browser) => {
-  send(client, message, 'PUP');
-  let button = new Buttons(
-    'CENAYANG BOT MENU',
-    [{body: 'Menu Teks'}, {body: 'Menu Tombol'}],
-    'Pilih tipe menu',
-  );
-
-  let section = [
-    {
-      title: 'sectionTitle',
-      rows: [
-        {id: 'customId', title: 'ListItem2', description: 'desc'},
-        {title: 'ListItem2'},
-      ],
-    },
-  ];
-
-  let list = new List('body', 'List', section, 'title', 'footer');
-
-  client.sendMessage(message['from'], list);
+const pup = async (browser, client, message, value) => {
+  await message.react(pReaction.loading);
+  try {
+    const test = await scraper.testing(browser, value);
+    console.log(JSON.stringify(test));
+  } catch (error) {
+    console.log(error);
+  }
 };
+
+// ======================
+//
+//
+// ====== GAP ===========
+// === AUTOMATION =======
+//
+//
+//
+// ======================
 
 //check if is admin
 const isAdmin = (message, chat) => {
@@ -1037,6 +920,18 @@ const isAdmin = (message, chat) => {
   }
 };
 
+//on success command
+const onCommandStatus = async (client, message, status) => {
+  await message.react(
+    status == 'success' ? pReaction.success : pReaction.failed,
+  );
+  await send(
+    client,
+    message,
+    status == 'success' ? msg.success.norm : msg.error.norm,
+  );
+};
+
 module.exports = {
   reply,
   send,
@@ -1046,10 +941,7 @@ module.exports = {
   sticker,
   menu,
   menuTeks,
-  downFB,
-  downTik,
-  downInsta,
-  downYT,
+  allMediaDownload,
   joinGroupPremium,
   premiumList,
   txToLogoEsp,

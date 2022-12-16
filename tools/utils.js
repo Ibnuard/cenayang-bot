@@ -10,7 +10,13 @@ const isUrl = url => {
   );
 };
 
+function toMB(bytes, digit) {
+  var converted = bytes / (1024 * 1024);
+  return digit ? converted.toFixed(digit) : Math.round(converted);
+}
+
 module.exports = {
   randomInt,
   isUrl,
+  toMB,
 };

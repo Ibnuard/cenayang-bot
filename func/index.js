@@ -1,4 +1,3 @@
-exports.downloader = require('./downloader');
 exports.genMenu = require('./feature');
 exports.db = require('./storage');
 exports.group = require('./group');

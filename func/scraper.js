@@ -3,62 +3,6 @@ const {randomInt} = require('../tools/utils');
 const fs = require('fs');
 const config = require('../config.json');
 
-//INSTAGRAM
-const igDownload = async (browser, url) => {
-  let BASE_URL = config.igDownloader;
-
-  const page = await browser.newPage();
-
-  const response = await page.goto(BASE_URL, {waitUntil: 'load'});
-
-  const pageStatus = response.status();
-
-  if (pageStatus !== 200) {
-    await page.close();
-
-    return {
-      status: pageStatus,
-      media: [],
-      error: 'ERROR_SERVER',
-    };
-  }
-
-  await page.setUserAgent(userAgent.random().toString());
-
-  await page.type('input[name=url]', url);
-
-  await page.click('#submit');
-
-  //await page.waitForNavigation({ timeout: 1000 });
-
-  try {
-    await page.waitForSelector("div[id='results'] > div", {visible: true});
-
-    const data = await page.evaluate(async () => {
-      root = Array.from(document.querySelectorAll("div[id='results'] > div"));
-      const links = root.map(item => {
-        return item.querySelector('div > div > a').getAttribute('href');
-      });
-      return links;
-    });
-
-    await page.close();
-
-    return {
-      status: 200,
-      media: data,
-      error: [],
-    };
-  } catch (error) {
-    await page.close();
-    return {
-      status: 400,
-      media: null,
-      error: 'INVALID_URL',
-    };
-  }
-};
-
 // FACESWAP
 const faceSwap = async (browser, input, target) => {
   let BASE_URL = config.faceSwap;
@@ -254,17 +198,6 @@ const anime = async (browser, image) => {
 
     await page.click('#page-container > div > div._action-panel_ewapq_64');
 
-    const album =
-      (await page.$(
-        '#page-container > div > div._modal_f95ly_1 > div > div > div',
-      )) || '';
-
-    if (album) {
-      console.log('ada');
-    } else {
-      console.log('ga ada');
-    }
-
     await page.waitForSelector(
       '#page-container > div > div._modal_f95ly_1 > div > div > div',
     );
@@ -330,9 +263,109 @@ const anime = async (browser, image) => {
   }
 };
 
+const allDownloader = async (browser, url) => {
+  let BASE_URL = config.allDownloader;
+
+  const context = await browser.createIncognitoBrowserContext();
+
+  const page = await context.newPage();
+
+  const response = await page.goto(BASE_URL, {waitUntil: 'load'});
+
+  const pageStatus = response.status();
+
+  if (pageStatus !== 200) {
+    await page.close();
+
+    return {
+      status: pageStatus,
+      media: [],
+      error: 'ERROR_STATUS',
+    };
+  }
+
+  await page.setUserAgent(userAgent.random().toString());
+
+  try {
+    await page.type('#sf_url', url);
+
+    await page.click('#sf_submit');
+
+    await page.waitForSelector(
+      "div[id='sf_result'] > div.media-result > div.result-box.video",
+    );
+
+    const video =
+      (await page.$(
+        "div[id='sf_result'] > div.media-result > div.result-box.video > div.info-box > div.link-box",
+      )) || '';
+
+    if (video) {
+      const download = await page.evaluate(async () => {
+        root = Array.from(
+          document.querySelectorAll(
+            "div[id='sf_result'] > div.media-result > div.result-box.video",
+          ),
+        );
+
+        const links = root.map(item => {
+          const data = item.querySelector('div > div.def-btn-box > a');
+          return {
+            link: data.getAttribute('href'),
+            filename: data?.getAttribute('download'),
+            filetype: data?.getAttribute('data-type'),
+          };
+        });
+        return links;
+      });
+
+      await page.close();
+
+      return {
+        status: 200,
+        media: download,
+        error: null,
+      };
+    } else {
+      const download = await page.evaluate(async () => {
+        root = Array.from(
+          document.querySelectorAll(
+            "div[id='sf_result'] > div.media-result > div.result-box.video",
+          ),
+        );
+
+        const links = root.map(item => {
+          const data = item.querySelector('div .single > div.def-btn-box > a');
+          return {
+            link: data.getAttribute('href'),
+            filename: data?.getAttribute('download'),
+            filetype: data?.getAttribute('data-type'),
+          };
+        });
+        return links;
+      });
+
+      await page.close();
+
+      return {
+        status: 200,
+        media: download,
+        error: null,
+      };
+    }
+  } catch (error) {
+    await page.close();
+    return {
+      status: 400,
+      media: null,
+      error: 'SERVER ERROR',
+    };
+  }
+};
+
 module.exports = {
-  igDownload,
   faceSwap,
   faceCartoon,
   anime,
+  allDownloader,
 };

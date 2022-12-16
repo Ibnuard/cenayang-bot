@@ -48,8 +48,8 @@ const onMessageReceived = async (client, message, browser) => {
 
   //HANDLE IF PREFIX =
   if (prefix == '=') {
-    dLog('CALCULATOR', message.from, false, getMessage);
-    return command.hitung(client, message, getMessage);
+    const operation = cmd.replace('=', '');
+    return command.hitung(client, message, operation);
   }
 
   //IF USER PREMIUM OR HAVE QUOTAS
@@ -86,23 +86,27 @@ const onMessageReceived = async (client, message, browser) => {
         break;
       case prefix + 'menu':
         await user.addUserCommandCount(message.from, chat);
-        return command.menuTeks(client, message);
+        return command.menuTeks(client, message, prefix);
+        break;
+      case prefix + 'dl':
+        await user.addUserCommandCount(message.from, chat);
+        return command.allMediaDownload(client, message, value, browser);
         break;
       case prefix + 'fb':
         await user.addUserCommandCount(message.from, chat);
-        return command.downFB(client, message, value);
+        return command.downFB(client, message, value, browser);
         break;
       case prefix + 'facebook':
         await user.addUserCommandCount(message.from, chat);
-        return command.downFB(client, message, value);
+        return command.downFB(client, message, value, browser);
         break;
       case prefix + 'tt':
         await user.addUserCommandCount(message.from, chat);
-        return command.downTik(client, message, value);
+        return command.downTik(client, message, value, browser);
         break;
       case prefix + 'tiktok':
         await user.addUserCommandCount(message.from, chat);
-        return command.downTik(client, message, value);
+        return command.downTik(client, message, value, browser);
         break;
       case prefix + 'ig':
         await user.addUserCommandCount(message.from, chat);
@@ -210,7 +214,7 @@ const onMessageReceived = async (client, message, browser) => {
         return command.premiumList(client, message);
         break;
       case prefix + 'pup':
-        return command.pup(client, message, browser, value);
+        return command.pup(browser, client, message, value);
         break;
         return null;
         break;
