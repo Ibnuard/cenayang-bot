@@ -1,11 +1,4 @@
 const config = require('../config.json');
-
-const nulis = text => {
-  return `https://api.vhtear.com/write_image?text=${encodeURI(text)}&apikey=${
-    config.vhtear
-  }`;
-};
-
 const logoEsp = text => {
   return `https://api.vhtear.com/gamelogo?text=${encodeURI(text)}&apikey=${
     config.vhtear
@@ -13,6 +6,5 @@ const logoEsp = text => {
 };
 
 module.exports = {
-  nulis,
   logoEsp,
 };
