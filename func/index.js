@@ -4,6 +4,6 @@ exports.group = require('./group');
 exports.text = require('./textMaker');
 exports.misc = require('./misc');
 exports.reminder = require('./reminder');
-exports.scraper = require('./scraper/index');
 exports.imageManipulation = require('./image');
+exports.scraper = require('./scraper');
 exports.user = require('./user');

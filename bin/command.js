@@ -7,10 +7,10 @@ const {
   text,
   misc,
   reminder,
-  scraper,
   imageManipulation,
   user,
   group,
+  scraper,
 } = require('../func');
 const config = require('../config.json');
 const {dLog} = require('../tools/log');

@@ -1,3 +1,6 @@
+const config = require('../../config.json');
+const userAgent = require('user-agents');
+
 //DOWNLOAD ALL MEDIA LINK
 const allDownloader = async (browser, url) => {
   let BASE_URL = config.allDownloader;

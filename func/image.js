@@ -1,4 +1,4 @@
-const {scraper} = require('.');
+const scraper = require('./scraper');
 
 //handle faceSwap session
 const faceSwap = async (browser, client, message, quoted) => {

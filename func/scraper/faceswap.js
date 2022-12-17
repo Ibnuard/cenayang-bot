@@ -1,3 +1,8 @@
+const config = require('../../config.json');
+const userAgent = require('user-agents');
+const {randomInt} = require('../../tools/utils');
+const fs = require('fs');
+
 const faceSwap = async (browser, input, target) => {
   let BASE_URL = config.faceSwap;
 
