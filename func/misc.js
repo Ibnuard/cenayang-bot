@@ -1,14 +1,3 @@
-const config = require('../config.json');
-const {fetchJson} = require('../tools/fetch');
-const {spawn} = require('child_process');
-
-const gempa = () =>
-  new Promise((resolve, reject) => {
-    fetchJson(`https://api.vhtear.com/infogempa?apikey=${config.vhtear}`)
-      .then(result => resolve(result))
-      .catch(err => reject(err));
-  });
-
 const calculator = input => {
   try {
     const hasil = eval('(' + input + ')');
@@ -19,6 +8,5 @@ const calculator = input => {
 };
 
 module.exports = {
-  gempa,
   calculator,
 };

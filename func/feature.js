@@ -53,6 +53,11 @@ const MENUS = [
     title: 'Automation dan Kegunaan',
     rows: [
       {
+        id: 'ingetin',
+        title: 'Ingetin',
+        description: 'Membuat reminder atau pengingat',
+      },
+      {
         id: 'dl',
         title: 'Download Social Media',
         description:
@@ -64,29 +69,24 @@ const MENUS = [
         description: 'Download dari youtube sebagai mp3',
       },
       {
-        id: 'ingetin',
-        title: 'Ingetin',
-        description: 'Membuat reminder atau pengingat',
+        id: 'nulis',
+        title: 'Nulis',
+        description: 'Ubah teks jadi nulis di kertas',
       },
+    ],
+  },
+  {
+    title: 'Fitur Grup',
+    rows: [
       {
         id: 'antikasar',
         title: 'Antikasar',
         description: 'Filter kata kata kasar',
       },
-    ],
-  },
-  {
-    title: 'Teks dan Tulisan',
-    rows: [
       {
-        id: 'nulis',
-        title: 'Nulis',
-        description: 'Ubah teks jadi nulis di kertas',
-      },
-      {
-        id: 'logo',
-        title: 'Logo',
-        description: 'Ubah teks jadi logo esports',
+        id: 'bye',
+        title: 'Bye',
+        description: 'Mengeluarkan BOT dari grup',
       },
     ],
   },
@@ -107,16 +107,6 @@ const MENUS = [
         id: 'gempa',
         title: 'Gempa',
         description: 'Data gempa BMKG terbaru',
-      },
-    ],
-  },
-  {
-    title: 'Fitur Grup dan Admin',
-    rows: [
-      {
-        id: 'bye',
-        title: 'Bye',
-        description: 'Mengeluarkan BOT dari grup',
       },
     ],
   },
