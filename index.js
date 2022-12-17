@@ -16,6 +16,7 @@ moment.locale('id');
 //CLIENT INIT
 const client = new Client({
   authStrategy: new LocalAuth({
+    clientId: 'CENAYANG_DEV',
     dataPath: './wa_auth/',
   }),
   puppeteer: {

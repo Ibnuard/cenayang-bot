@@ -92,45 +92,9 @@ const onMessageReceived = async (client, message, browser) => {
         await user.addUserCommandCount(message.from, chat);
         return command.allMediaDownload(client, message, value, browser);
         break;
-      case prefix + 'fb':
-        await user.addUserCommandCount(message.from, chat);
-        return command.downFB(client, message, value, browser);
-        break;
-      case prefix + 'facebook':
-        await user.addUserCommandCount(message.from, chat);
-        return command.downFB(client, message, value, browser);
-        break;
-      case prefix + 'tt':
-        await user.addUserCommandCount(message.from, chat);
-        return command.downTik(client, message, value, browser);
-        break;
-      case prefix + 'tiktok':
-        await user.addUserCommandCount(message.from, chat);
-        return command.downTik(client, message, value, browser);
-        break;
-      case prefix + 'ig':
-        await user.addUserCommandCount(message.from, chat);
-        return command.downInsta(browser, client, message, value);
-        break;
-      case prefix + 'instagram':
-        await user.addUserCommandCount(message.from, chat);
-        return command.downInsta(browser, client, message, value);
-        break;
-      case prefix + 'ytmp4':
-        await user.addUserCommandCount(message.from, chat);
-        return command.downYT(client, message, 'vi', value);
-        break;
-      case prefix + 'yt':
-        await user.addUserCommandCount(message.from, chat);
-        return command.downYT(client, message, 'vi', value);
-        break;
-      case prefix + 'youtube':
-        await user.addUserCommandCount(message.from, chat);
-        return command.downYT(client, message, 'vi', value);
-        break;
       case prefix + 'ytmp3':
         await user.addUserCommandCount(message.from, chat);
-        return command.downYT(client, message, 'au', value);
+        return command.ytmp3(client, message, value, browser);
         break;
       case prefix + 'nulis':
         await user.addUserCommandCount(message.from, chat);

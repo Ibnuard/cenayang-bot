@@ -56,7 +56,12 @@ const MENUS = [
         id: 'dl',
         title: 'Download Social Media',
         description:
-          'Download dari semua social media (Instagram, Facebook, TikTok, Youtube, Twitter) ',
+          'Download dari semua social media (Instagram, Facebook, TikTok, Youtube, Twitter)',
+      },
+      {
+        id: 'ytmp3',
+        title: 'Download Youtube MP3',
+        description: 'Download dari youtube sebagai mp3',
       },
       {
         id: 'ingetin',
@@ -120,14 +125,15 @@ const MENUS = [
 const listMenu = simbol => {
   const prefix = '*LIST PERINTAH CENAYANG BOT V1.0*\n';
   const endfix =
-    '\nNote:\nKalo dirasa bot ini keren / membantu kalian bisa berdonasi yaa, kasihan ownernya sobat misqueen hihi.. \n\nLove you...';
+    '\nNote:\nKalo dirasa bot ini keren / membantu kalian bisa berdonasi yaa. \n\nKasihan ownernya sobat misqueen hihi.. \n\nLove you...';
   let temp = '';
 
   function _splitMenu(arr = []) {
     let temp = '';
 
     for (let i = 0; i < arr.length; i++) {
-      temp = temp + `_*${simbol}${arr[i].id}*_\n↳ ${arr[i].description}\n\n`;
+      temp =
+        temp + `╔ _*${simbol}${arr[i].id}*_\n╚═► ${arr[i].description}\n\n`;
     }
 
     return temp;

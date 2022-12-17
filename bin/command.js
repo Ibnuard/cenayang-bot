@@ -172,7 +172,7 @@ const allMediaDownload = async (client, message, value, browser) => {
     return send(
       client,
       message,
-      'Cara penggunaan : _!dl <link ig/igstory/fb/tiktok>_',
+      'Cara penggunaan : _!dl <link ig/igstory/fb/tiktok/yt/twitter>_',
     ).then(async () => {
       await message.react(pReaction.info);
     });
@@ -202,7 +202,47 @@ const allMediaDownload = async (client, message, value, browser) => {
         }
       });
     } else {
-      console.log(JSON.stringify(social));
+      await onCommandStatus(client, message, 'failed');
+    }
+  } catch (error) {
+    await onCommandStatus(client, message, 'failed');
+  }
+};
+
+//download all media
+const ytmp3 = async (client, message, value, browser) => {
+  await message.react(pReaction.loading);
+
+  if (!value) {
+    return send(
+      client,
+      message,
+      'Cara penggunaan : _!ytmp3 <link youtube>_',
+    ).then(async () => {
+      await message.react(pReaction.info);
+    });
+  }
+
+  try {
+    const youtube = await scraper.ytmp3(browser, value);
+    if (youtube.status == 200) {
+      const media = await MessageMedia.fromUrl(youtube.media.url, {
+        unsafeMime: true,
+        filename: youtube.media.title + '.mp3',
+      });
+
+      if (media) {
+        await client
+          .sendMessage(message.from, media, {
+            caption: youtube.media.title + '\n\nDownloaded by Cenayang BOT',
+            sendMediaAsDocument:
+              utils.toMB(media.filesize) >= 15 ? true : false,
+          })
+          .then(async () => {
+            await onCommandStatus(client, message, 'success');
+          });
+      }
+    } else {
       await onCommandStatus(client, message, 'failed');
     }
   } catch (error) {
@@ -890,8 +930,13 @@ const premiumList = (client, message) => {
 const pup = async (browser, client, message, value) => {
   await message.react(pReaction.loading);
   try {
-    const test = await scraper.testing(browser, value);
-    console.log(JSON.stringify(test));
+    const test = MessageMedia.fromUrl(
+      'https://dl150.y2mate.com/?file=M3R4SUNiN3JsOHJ6WWQ2a3NQS1Y5ZGlxVlZIOCtyZ1FzUFFVN0ZzYUxwNEg4c1lEK05LSkRZSmlDK3dqMUppckVwVmkvRHJkZnA2R0lGelBzSkVxUjB5UjlzSTE1SHFkMVpjdlROMWtWQk85eWNDdWhtSXoyeUdnTzRycklMUURSSEJJdVdkaDVEWGR3ZUdIL3hMOXZDQ0Vnd3VHZERRRG9ENGZOUGpWck00ZWdqaVpQYUc4Z01aRHZpK0Y1OGNkaWFYRTVGZXVoYUVvNWRoM0R4UT0%3D',
+      {
+        unsafeMime: true,
+      },
+    );
+    client.sendMessage(message.from, test);
   } catch (error) {
     console.log(error);
   }
@@ -942,6 +987,7 @@ module.exports = {
   menu,
   menuTeks,
   allMediaDownload,
+  ytmp3,
   joinGroupPremium,
   premiumList,
   txToLogoEsp,
