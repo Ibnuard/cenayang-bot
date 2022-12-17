@@ -58,9 +58,9 @@ const gempa = async browser => {
       quality: 100,
       clip: {
         x: box.x,
-        y: box.y,
+        y: box.y + 150,
         width: box.width,
-        height: 1168,
+        height: 1000,
       },
       omitBackground: true,
     });
