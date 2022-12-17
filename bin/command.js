@@ -178,6 +178,8 @@ const allMediaDownload = async (client, message, value, browser) => {
     });
   }
 
+  await send(client, message, 'Sebentar yaa lagi di proses kok...');
+
   try {
     const social = await scraper.allDownloader(browser, value);
     if (social.status == 200) {
@@ -222,6 +224,8 @@ const ytmp3 = async (client, message, value, browser) => {
       await message.react(pReaction.info);
     });
   }
+
+  await send(client, message, 'Sebentar yaa lagi di proses kok...');
 
   try {
     const youtube = await scraper.ytmp3(browser, value);
