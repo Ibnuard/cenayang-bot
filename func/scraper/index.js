@@ -6,4 +6,5 @@ module.exports = {
   ...require('./youtubemp3'),
   ...require('./ssweb'),
   ...require('./nulis'),
+  ...require('./gempa'),
 };

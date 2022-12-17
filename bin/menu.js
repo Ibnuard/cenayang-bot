@@ -96,10 +96,6 @@ const onMessageReceived = async (client, message, browser) => {
         await user.addUserCommandCount(message.from, chat);
         return command.txToNulis(browser, client, message, value, extra_value);
         break;
-      case prefix + 'logo':
-        await user.addUserCommandCount(message.from, chat);
-        return command.txToLogoEsp(client, message, value);
-        break;
       case prefix + 'buatqr':
         await user.addUserCommandCount(message.from, chat);
         return command.txToQR(client, message, value);
@@ -110,7 +106,7 @@ const onMessageReceived = async (client, message, browser) => {
         break;
       case prefix + 'gempa':
         await user.addUserCommandCount(message.from, chat);
-        return command.gempa(client, message);
+        return command.gempa(browser, client, message);
         break;
       case prefix + 'ingetin':
         await user.addUserCommandCount(message.from, chat);

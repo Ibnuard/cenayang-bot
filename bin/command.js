@@ -107,7 +107,15 @@ const menuTeks = async (client, message, prefix) => {
 //menu tombol
 const menuTombol = async (client, message) => {
   await message.react(pReaction.loading);
-  const list = genMenu.MENUS;
+  const list = new List([
+    {
+      title: 'sectionTitle',
+      rows: [
+        {id: 'customId', title: 'ListItem2', description: 'desc'},
+        {title: 'ListItem2'},
+      ],
+    },
+  ]);
   send(client, message, list).then(async () => {
     await message.react(pReaction.success);
   });
@@ -360,26 +368,6 @@ const ssWeb = async (browser, client, message, value) => {
   }
 };
 
-//teks ke logo esports
-const txToLogoEsp = async (client, message, value) => {
-  await message.react(pReaction.loading);
-  if (value) {
-    const url = text.logoEsp(value);
-    const media = await MessageMedia.fromUrl(url, {
-      unsafeMime: true,
-    });
-    send(client, message, media).then(async () => {
-      await message.react(pReaction.success);
-    });
-  } else {
-    send(client, message, 'Cara penggunaan : _!logo squadKece_').then(
-      async () => {
-        await message.react(pReaction.info);
-      },
-    );
-  }
-};
-
 //chord
 const hitung = async (client, message, value) => {
   await message.react(pReaction.loading);
@@ -404,25 +392,36 @@ const hitung = async (client, message, value) => {
   }
 };
 
-const gempa = async (client, message) => {
+const gempa = async (browser, client, message) => {
   await message.react(pReaction.loading);
 
-  misc
-    .gempa()
-    .then(async ({result}) => {
-      if (result) {
-        const data = result[0];
-        const word = `GEMPA TERBARU\n\nJam : ${data?.Jam} - ${data?.Tanggal}\nKedalaman : ${data?.Kedalaman}\nWilayah : ${data?.Wilayah}\nMagnitude : ${data?.magnitude}`;
-        send(client, message, word).then(async () => {
-          await message.react(pReaction.success);
-        });
+  try {
+    const gempa = await scraper.gempa(browser);
+    if (gempa.status == 200) {
+      const words =
+        '_INFO GEMPA WILAYAH INDONESIA TERBARU_\n' +
+        `\nWaktu : ${gempa.data.waktu}` +
+        `\nMagnitude : ${gempa.data.magnitudo}` +
+        `\nKedalaman : ${gempa.data.kedalaman}` +
+        `\nWilayah : ${gempa.data.wilayah}` +
+        '\n\n Diambil dari data BMKG';
+
+      const media = new MessageMedia('image/jpeg', gempa.data.image);
+
+      if (media) {
+        await client
+          .sendMessage(message.from, media, {caption: words})
+          .then(async () => {
+            await onCommandStatus(client, message, 'success');
+          });
       }
-    })
-    .catch(err => {
-      send(client, message, msg.error.norm).then(async () => {
-        await message.react(pReaction.failed);
-      });
-    });
+    } else {
+      await onCommandStatus(client, message, 'failed');
+    }
+  } catch (error) {
+    console.log(error);
+    await onCommandStatus(client, message, 'failed');
+  }
 };
 
 //kirim ping
@@ -977,17 +976,7 @@ const premiumList = (client, message) => {
 //pup
 const pup = async (browser, client, message, value) => {
   await message.react(pReaction.loading);
-  try {
-    const test = MessageMedia.fromUrl(
-      'https://dl150.y2mate.com/?file=M3R4SUNiN3JsOHJ6WWQ2a3NQS1Y5ZGlxVlZIOCtyZ1FzUFFVN0ZzYUxwNEg4c1lEK05LSkRZSmlDK3dqMUppckVwVmkvRHJkZnA2R0lGelBzSkVxUjB5UjlzSTE1SHFkMVpjdlROMWtWQk85eWNDdWhtSXoyeUdnTzRycklMUURSSEJJdVdkaDVEWGR3ZUdIL3hMOXZDQ0Vnd3VHZERRRG9ENGZOUGpWck00ZWdqaVpQYUc4Z01aRHZpK0Y1OGNkaWFYRTVGZXVoYUVvNWRoM0R4UT0%3D',
-      {
-        unsafeMime: true,
-      },
-    );
-    client.sendMessage(message.from, test);
-  } catch (error) {
-    console.log(error);
-  }
+  return menuTombol(client, message);
 };
 
 // ======================
@@ -1038,7 +1027,6 @@ module.exports = {
   ytmp3,
   joinGroupPremium,
   premiumList,
-  txToLogoEsp,
   txToNulis,
   txToQR,
   ssWeb,
