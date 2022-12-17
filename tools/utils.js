@@ -1,3 +1,5 @@
+const qrcode = require('qrcode');
+
 function randomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
@@ -15,8 +17,17 @@ function toMB(bytes, digit) {
   return digit ? converted.toFixed(digit) : Math.round(converted);
 }
 
+const generateQRCode = async text => {
+  try {
+    return await qrcode.toDataURL(text);
+  } catch (err) {
+    console.error(err);
+  }
+};
+
 module.exports = {
   randomInt,
   isUrl,
   toMB,
+  generateQRCode,
 };

@@ -2,7 +2,6 @@
 
 const {command} = require('.');
 const {checkStatusAntiKasar} = require('../func/group');
-const {dLog} = require('../tools/log');
 const bwordList = require('../database/group/katakasar.json');
 const {detectIfMention} = require('./command');
 const {user} = require('../func');
@@ -42,9 +41,6 @@ const onMessageReceived = async (client, message, browser) => {
       }
     }
   }
-
-  //console.log(`from ${message?.from} -> ${cmd} -> ${value} ${extra_value}`);
-  dLog(cmd, message.from, false, `${value} || ${extra_value}`);
 
   //HANDLE IF PREFIX =
   if (prefix == '=') {
@@ -98,7 +94,7 @@ const onMessageReceived = async (client, message, browser) => {
         break;
       case prefix + 'nulis':
         await user.addUserCommandCount(message.from, chat);
-        return command.txToNulis(client, message, value);
+        return command.txToNulis(browser, client, message, value, extra_value);
         break;
       case prefix + 'logo':
         await user.addUserCommandCount(message.from, chat);
@@ -110,7 +106,7 @@ const onMessageReceived = async (client, message, browser) => {
         break;
       case prefix + 'ssweb':
         await user.addUserCommandCount(message.from, chat);
-        return command.ssWeb(client, message, value);
+        return command.ssWeb(browser, client, message, value);
         break;
       case prefix + 'gempa':
         await user.addUserCommandCount(message.from, chat);

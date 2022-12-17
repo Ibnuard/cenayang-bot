@@ -6,12 +6,6 @@ const nulis = text => {
   }`;
 };
 
-const qrcode = text => {
-  return `https://api.vhtear.com/generateqr?data=${encodeURI(text)}&apikey=${
-    config.vhtear
-  }`;
-};
-
 const logoEsp = text => {
   return `https://api.vhtear.com/gamelogo?text=${encodeURI(text)}&apikey=${
     config.vhtear
@@ -21,5 +15,4 @@ const logoEsp = text => {
 module.exports = {
   nulis,
   logoEsp,
-  qrcode,
 };

@@ -1,5 +1,4 @@
 const {db} = require('.');
-const {dLog} = require('../tools/log');
 const {getMoment, getMomentDiff} = require('../tools/moment');
 const {loadData, updateData, saveData, saveDataOvt} = require('./storage');
 const moment = require('moment');
@@ -24,12 +23,9 @@ const checkGroupStatus = async client => {
   }
 
   if (groupList.length) {
-    dLog('GROUP_LIST', 'SYSTEM', false, groupList?.length);
     for (let i = 0; i < groupList.length; i++) {
       await _checkValidity(groupList[i].id, groupList[i].joinTime);
     }
-  } else {
-    dLog('GROUP_LIST', 'SYSTEM', false, 'NO GROUP LIST');
   }
 };
 
@@ -50,7 +46,6 @@ const leaveGroup = async (client, group) => {
 };
 
 const joinedPremiumGroup = async (client, group) => {
-  dLog('GROUP', 'SYSTEM', false, 'GROUP ID : ' + group.chatId);
   const data = {
     id: group?.chatId,
     joinTime: getMoment(),
@@ -65,7 +60,6 @@ const joinedPremiumGroup = async (client, group) => {
     });
 
     if (find.length > 0) {
-      dLog('GROUP', 'SYSTEM', false, 'JOIN EXISTIING PREMIUM GROUP');
       updateData('group_premium', data, 'joinTime');
 
       await client.sendMessage(
@@ -77,8 +71,6 @@ const joinedPremiumGroup = async (client, group) => {
         `BOT akan otomatis keluar pada ${moment(expiredDate).format('LL')}`,
       );
     } else {
-      dLog('GROUP', 'SYSTEM', false, 'JOIN NEW PREMIUM GROUP');
-
       db.saveData('group_premium', data);
 
       await client.sendMessage(
@@ -91,7 +83,6 @@ const joinedPremiumGroup = async (client, group) => {
       );
     }
   } else {
-    dLog('GROUP', 'SYSTEM', false, 'FIRST PREMIUM GROUP');
     db.saveData('group_premium', data);
 
     await client.sendMessage(

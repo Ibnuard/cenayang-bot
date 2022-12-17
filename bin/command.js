@@ -13,11 +13,10 @@ const {
   scraper,
 } = require('../func');
 const config = require('../config.json');
-const {dLog} = require('../tools/log');
 const moment = require('moment');
 const {msg, pReaction, badwReaction} = require('./messages');
 const katabot = require('../database/group/katabot.json');
-const {randomInt} = require('../tools/utils');
+const {randomInt, generateQRCode} = require('../tools/utils');
 const {utils} = require('../tools');
 moment.locale('id');
 
@@ -132,7 +131,6 @@ const sticker = async (client, message) => {
         });
       }
     } else {
-      dLog('STICKER', message.from, true, 'NO MEDIA DETECTED');
       const word =
         'Tidak ada gambar/video/gif untuk dijadikan sticker, pilih gambar lalu tambahkan pesan !sticker';
       reply(message, word).then(async () => {
@@ -154,7 +152,6 @@ const sticker = async (client, message) => {
         });
       }
     } else {
-      dLog('STICKER', message.from, true, 'NO MEDIA DETECTED');
       const word =
         'Tidak ada gambar/video/gif untuk dijadikan sticker, pilih gambar lalu tambahkan pesan !sticker';
       reply(message, word).then(async () => {
@@ -256,62 +253,110 @@ const ytmp3 = async (client, message, value, browser) => {
 };
 
 //teks ke nulis
-const txToNulis = async (client, message, value) => {
+const txToNulis = async (browser, client, message, value, extra) => {
   await message.react(pReaction.loading);
-  if (value) {
-    const url = text.nulis(value);
-    const media = await MessageMedia.fromUrl(url, {
-      unsafeMime: true,
+
+  if (!value) {
+    return await send(
+      client,
+      message,
+      'Cara penggunaan : _!nulis nama_kamu ini isi tulisan_\n\nGunakan _ untuk pengganti spasi pada nama.',
+    ).then(async () => {
+      await message.react(pReaction.info);
     });
-    send(client, message, media).then(async () => {
-      await message.react(pReaction.success);
-    });
-  } else {
-    send(client, message, 'Cara penggunaan : _!nulis ini tulisan abang_').then(
-      async () => {
-        await message.react(pReaction.info);
-      },
-    );
+  }
+
+  try {
+    const name = extra[0];
+
+    let content = '';
+
+    for (let i = 1; i < extra.length; i++) {
+      content = content + extra[i] + ' ';
+    }
+
+    const nulis = await scraper.nulis(browser, name, content);
+    if (nulis) {
+      const qrBase64 = await nulis.media.replace('data:image/png;base64,', '');
+      const media = new MessageMedia('image/jpeg', qrBase64);
+
+      if (media) {
+        await client.sendMessage(message.from, media).then(async () => {
+          await onCommandStatus(client, message, 'success');
+        });
+      }
+    } else {
+      await onCommandStatus(client, message, 'failed');
+    }
+  } catch (error) {
+    console.log(error);
+    await onCommandStatus(client, message, 'failed');
   }
 };
 
 //teks ke nulis
 const txToQR = async (client, message, value) => {
   await message.react(pReaction.loading);
-  if (value) {
-    const url = text.qrcode(value);
-    const media = await MessageMedia.fromUrl(url, {
-      unsafeMime: true,
+
+  if (!value) {
+    return await send(
+      client,
+      message,
+      'Cara penggunaan : _!buatqr www.google.com_',
+    ).then(async () => {
+      await message.react(pReaction.info);
     });
-    send(client, message, media).then(async () => {
-      await message.react(pReaction.success);
-    });
-  } else {
-    send(client, message, 'Cara penggunaan : _!buatqr www.google.com_').then(
-      async () => {
-        await message.react(pReaction.info);
-      },
-    );
+  }
+
+  try {
+    const qr = await generateQRCode(value);
+    if (qr) {
+      const qrBase64 = await qr.replace('data:image/png;base64,', '');
+      const media = new MessageMedia('image/jpeg', qrBase64);
+
+      if (media) {
+        await client.sendMessage(message.from, media).then(async () => {
+          await onCommandStatus(client, message, 'success');
+        });
+      }
+    } else {
+      await onCommandStatus(client, message, 'failed');
+    }
+  } catch (error) {
+    console.log(error);
+    await onCommandStatus(client, message, 'failed');
   }
 };
 
 //teks ke nulis
-const ssWeb = async (client, message, value) => {
+const ssWeb = async (browser, client, message, value) => {
   await message.react(pReaction.loading);
-  if (value) {
-    const url = misc.ssWeb(value);
-    const media = await MessageMedia.fromUrl(url, {
-      unsafeMime: true,
+  if (!value) {
+    return await send(
+      client,
+      message,
+      'Cara penggunaan : _!ssweb www.google.com_',
+    ).then(async () => {
+      await message.react(pReaction.info);
     });
-    send(client, message, media).then(async () => {
-      await message.react(pReaction.success);
-    });
-  } else {
-    send(client, message, 'Cara penggunaan : _!ssweb www.google.com_').then(
-      async () => {
-        await message.react(pReaction.info);
-      },
-    );
+  }
+
+  try {
+    const ss = await scraper.ssweb(browser, value);
+    if (ss.status == 200) {
+      const media = new MessageMedia('image/jpeg', ss.media);
+
+      if (media) {
+        await client.sendMessage(message.from, media).then(async () => {
+          await onCommandStatus(client, message, 'success');
+        });
+      }
+    } else {
+      await onCommandStatus(client, message, 'failed');
+    }
+  } catch (error) {
+    console.log(error);
+    await onCommandStatus(client, message, 'failed');
   }
 };
 
@@ -374,7 +419,6 @@ const gempa = async (client, message) => {
       }
     })
     .catch(err => {
-      dLog('GEMPA', message.from, true, 'ERR : ' + err);
       send(client, message, msg.error.norm).then(async () => {
         await message.react(pReaction.failed);
       });

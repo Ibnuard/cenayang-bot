@@ -4,4 +4,6 @@ module.exports = {
   ...require('./faceswap'),
   ...require('./facetoon'),
   ...require('./youtubemp3'),
+  ...require('./ssweb'),
+  ...require('./nulis'),
 };
