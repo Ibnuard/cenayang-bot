@@ -2,7 +2,7 @@ const cron = require('node-cron');
 
 //group cron
 const groupTask = func => {
-  return cron.schedule('* 1 * * *', () => {
+  return cron.schedule('0 0 */12 * * *', () => {
     func();
   });
 };

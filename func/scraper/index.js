@@ -7,4 +7,5 @@ module.exports = {
   ...require('./ssweb'),
   ...require('./nulis'),
   ...require('./gempa'),
+  ...require('./emojimix'),
 };

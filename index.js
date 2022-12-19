@@ -11,6 +11,8 @@ const moment = require('moment');
 const {checkReminderTime} = require('./func/reminder');
 const {user} = require('./func');
 
+const config = require('./config.json');
+
 moment.locale('id');
 
 //CLIENT INIT
@@ -72,10 +74,12 @@ client.on('ready', () => {
 
 //ON JOIN GROUP
 client.on('group_join', async data => {
-  if (data.type !== 'invite') {
-    await leaveGroup(client, data);
-  } else {
-    await joinedPremiumGroup(client, data);
+  if (data.id.participant == config.bot) {
+    if (data.type !== 'invite') {
+      await leaveGroup(client, data);
+    } else {
+      await joinedPremiumGroup(client, data);
+    }
   }
 });
 

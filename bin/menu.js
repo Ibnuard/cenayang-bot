@@ -27,7 +27,7 @@ const onMessageReceived = async (client, message, browser) => {
   const isCanUse = await user.isUserQuotaAvailable(message.from, chat);
 
   //IF BOT MENTIONED
-  await detectIfMention(client, message);
+  await detectIfMention(prefix, message);
 
   //HANDLE MESSAGE RECEIVED
   if (chat.isGroup == true) {
@@ -37,7 +37,7 @@ const onMessageReceived = async (client, message, browser) => {
 
       if (antikasar == true) {
         console.log('kata kasar detected!');
-        cmd = 'badword';
+        cmd = 'groupbadwordreaction!';
       }
     }
   }
@@ -51,6 +51,7 @@ const onMessageReceived = async (client, message, browser) => {
   //IF USER PREMIUM OR HAVE QUOTAS
   if (isCanUse) {
     //HANDLING USER QUOTA / REQUEST
+    console.log('command -> ' + cmd);
 
     switch (cmd) {
       case prefix + 'ping':
@@ -91,6 +92,10 @@ const onMessageReceived = async (client, message, browser) => {
       case prefix + 'ytmp3':
         await user.addUserCommandCount(message.from, chat);
         return command.ytmp3(client, message, value, browser);
+        break;
+      case prefix + 'mix':
+        await user.addUserCommandCount(message.from, chat);
+        return command.emojimix(browser, client, message, value);
         break;
       case prefix + 'nulis':
         await user.addUserCommandCount(message.from, chat);
@@ -133,7 +138,7 @@ const onMessageReceived = async (client, message, browser) => {
       //
       // ========================================
 
-      case prefix + 'badword':
+      case 'groupbadwordreaction!':
         return command.badWord(client, message);
         break;
       case prefix + 'antikasar':
@@ -150,6 +155,15 @@ const onMessageReceived = async (client, message, browser) => {
         break;
       case prefix + 'tagAll':
         return command.tagAll(client, message);
+        break;
+      case prefix + 'promote':
+        return command.adminPromote(client, message, chat);
+        break;
+      case prefix + 'demote':
+        return command.adminDemote(client, message, chat);
+        break;
+      case prefix + 'kick':
+        return command.adminKick(client, message, chat);
         break;
 
       // =========================================

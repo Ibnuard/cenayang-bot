@@ -2,6 +2,7 @@ const {db} = require('.');
 const {getMoment, getMomentDiff} = require('../tools/moment');
 const {loadData, updateData, saveData, saveDataOvt} = require('./storage');
 const moment = require('moment');
+const fs = require('fs');
 
 const checkGroupStatus = async client => {
   const groupList = loadData('group_premium');
@@ -14,7 +15,10 @@ const checkGroupStatus = async client => {
       await client
         .sendMessage(
           id,
-          'Halo gaes..\nGedang leave dari grup ya soalnya masa berlakunya udah habis huhuu\n\nKalian bisa hubungin admin yaa untuk pake bot ini lagi\n\nMaaciww.. See u...',
+          'Halo gaes..' +
+            '\nGedang leave dari grup ya soalnya masa berlakunya udah habis huhuu' +
+            '\n\nKalian bisa hubungin admin yaa untuk pake bot ini lagi' +
+            '\n\nMaaciww.. See u...',
         )
         .then(async () => {
           await grup.leave();
@@ -167,6 +171,67 @@ const checkStatusAntiKasar = groupId => {
   }
 };
 
+const kataKasarAddRank = async message => {
+  const groupId = message.from;
+  const contact = await message.getContact();
+
+  const author = contact.id._serialized;
+
+  const path = `./database/temp/antikasar/${groupId}.json`;
+
+  try {
+    if (!fs.existsSync(path)) {
+      let temp = [];
+      temp.push(author);
+
+      await fs.writeFileSync(path, JSON.stringify(temp));
+    } else {
+      const data = await fs.readFileSync(path);
+      const parsed = JSON.parse(data);
+
+      if (parsed) {
+        parsed.push(author);
+
+        await fs.writeFileSync(path, JSON.stringify(parsed));
+      }
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const kataKasarRank = async message => {
+  const groupId = message.from;
+  const path = `./database/temp/antikasar/${groupId}.json`;
+
+  try {
+    if (!fs.existsSync(path)) {
+      return 'NO_DATA';
+    } else {
+      const data = await fs.readFileSync(path);
+      const parsed = JSON.parse(data);
+
+      let grouping = {};
+
+      parsed.forEach(function (x) {
+        grouping[x] = (grouping[x] || 0) + 1;
+      });
+
+      const entries = Object.entries(grouping);
+
+      let temp = [];
+
+      for (let list of entries) {
+        temp.push({id: list[0], point: list[1]});
+      }
+
+      return temp;
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 module.exports = {
   checkGroupStatus,
   leaveGroup,
@@ -174,4 +239,6 @@ module.exports = {
   antiKasarOff,
   antiKasarOn,
   checkStatusAntiKasar,
+  kataKasarAddRank,
+  kataKasarRank,
 };

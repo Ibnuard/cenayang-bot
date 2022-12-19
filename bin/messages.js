@@ -29,7 +29,7 @@ const badwArr = [
 const msg = {
   wait: rand(waitArr),
   error: {
-    norm: '❌ Yah Maaf, Ada yang error! Coba lagi nanti ya!',
+    norm: '❌ Yah maaf ada yang error! Coba lagi ya!',
     admin: '⛔ Perintah ini cuma buat admin grup ya!',
     owner: '⛔ Ih kok bisa tau perintah owner si! gaboleh!',
     group: `⛔ Perintah ini cuma bisa dipake di grup ya!`,

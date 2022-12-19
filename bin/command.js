@@ -135,7 +135,7 @@ const sticker = async (client, message) => {
           stickerAuthor: 'CenayangBOT',
           stickerName: 'cenAyangSticker',
         }).then(async () => {
-          await onCommandStatus(client, message, 'success');
+          await onCommandStatus(client, message, 'success', true);
         });
       }
     } else {
@@ -424,6 +424,50 @@ const gempa = async (browser, client, message) => {
   }
 };
 
+const emojimix = async (browser, client, message, value) => {
+  await message.react(pReaction.loading);
+
+  if (!value) {
+    return await send(client, message, 'Cara penggunaan : _!mix 😎😡_').then(
+      async () => {
+        await message.react(pReaction.info);
+      },
+    );
+  }
+
+  try {
+    const emoji = await scraper.emojimix(browser, value);
+    if (emoji.status == 200) {
+      const media = await MessageMedia.fromUrl(emoji.media, {
+        unsafeMime: true,
+      });
+
+      if (media) {
+        await client
+          .sendMessage(message.from, media, {
+            sendMediaAsSticker: true,
+            stickerAuthor: 'CenayangBOT',
+            stickerName: 'cenAyangSticker',
+          })
+          .then(async () => {
+            await onCommandStatus(client, message, 'success', true);
+          });
+      }
+    } else if (emoji.error == 'FORMAT_ERROR') {
+      await send(client, message, 'Cara penggunaan : _!mix 😎😡_').then(
+        async () => {
+          await message.react(pReaction.info);
+        },
+      );
+    } else {
+      await onCommandStatus(client, message, 'failed');
+    }
+  } catch (error) {
+    console.log(error);
+    await onCommandStatus(client, message, 'failed');
+  }
+};
+
 //kirim ping
 const ingetin = async (client, message, value, extra) => {
   await message.react(pReaction.loading);
@@ -512,7 +556,7 @@ const ingetin = async (client, message, value, extra) => {
 //load data
 const antikasar = (client, message, value, chat) => {
   if (chat.isGroup) {
-    const admin = isAdmin(message, chat);
+    const admin = isAdmin(chat, message.author);
     if (admin) {
       if (value) {
         if (value == 'on') {
@@ -577,13 +621,14 @@ const antikasar = (client, message, value, chat) => {
 //load data
 const badWord = (client, message) => {
   const reaction = badwReaction();
+  group.kataKasarAddRank(message);
   reply(message, reaction);
 };
 
 //load data
 const warnBye = async (client, message, value, chat) => {
   if (chat.isGroup) {
-    const admin = isAdmin(message, chat);
+    const admin = isAdmin(chat, message.author);
     if (admin) {
       await send(
         client,
@@ -613,7 +658,7 @@ const warnBye = async (client, message, value, chat) => {
 //load data
 const bye = async (client, message, value, chat) => {
   if (chat.isGroup) {
-    const admin = isAdmin(message, chat);
+    const admin = isAdmin(chat, message.author);
     if (admin) {
       await send(
         client,
@@ -865,10 +910,10 @@ const tagAll = async (client, message) => {
       const contact = await client.getContactById(participant.id._serialized);
 
       mentions.push(contact);
-      text += `@${participant.id.user} \n`;
+      text += `@${participant.id.user} `;
     }
 
-    await chat.sendMessage(text, {mentions});
+    await chat.sendMessage('Ping ' + text, {mentions});
     await message.react(pReaction.success);
   } else {
     send(client, message, 'Fitur ini hanya tersedia untuk grup!').then(
@@ -879,8 +924,14 @@ const tagAll = async (client, message) => {
   }
 };
 
-const detectIfMention = async (client, message) => {
+const detectIfMention = async (prefix, message) => {
   const mentions = await message.getMentions();
+
+  const split = message.body.split(' ')[0];
+
+  if (split.includes(prefix)) {
+    return null;
+  }
 
   for (let contact of mentions) {
     if (contact.isMe) {
@@ -911,6 +962,250 @@ const premiumOnly = async (client, message) => {
   await send(client, message, word).then(async () => {
     await message.react(pReaction.info);
     return await donasi(client, message);
+  });
+};
+
+// =================================================
+//
+//
+//         fungsi admin grup bot
+//
+//
+// ==================================================
+
+const adminPromote = async (client, message, chat) => {
+  const isGroup = await chat.isGroup;
+
+  await message.react(pReaction.loading);
+
+  if (!isGroup) {
+    return await send(
+      client,
+      message,
+      'Fitur ini hanya tersedia untuk grup!',
+    ).then(async () => {
+      await message.react(pReaction.info);
+    });
+  }
+
+  const isBot = await isBotAdmin(client, chat);
+  const isAuthorAdmin = await isAdmin(chat, message.author);
+  const mentioned = await message.getMentions();
+
+  if (!isAuthorAdmin) {
+    return await send(
+      client,
+      message,
+      'Fitur ini hanya bisa digunakan oleh admin grup!',
+    ).then(async () => {
+      await message.react(pReaction.info);
+    });
+  }
+
+  if (!isBot) {
+    return await send(
+      client,
+      message,
+      'Kamu harus menjadikan bot sebagai admin dulu untuk menggunakan fitur ini!',
+    ).then(async () => {
+      await message.react(pReaction.info);
+    });
+  }
+
+  if (!mentioned.length) {
+    return await send(
+      client,
+      message,
+      'Tidak ada kontak yang dimention. \n\nContoh : _!promote @namakontak_ atau _!promote @calonadmin1 @calonadmin2_',
+    ).then(async () => {
+      await message.react(pReaction.info);
+    });
+  }
+
+  let target = [];
+
+  let text = '';
+  let mentions = [];
+
+  for (let contact of mentioned) {
+    for (let participant of chat.participants) {
+      if (contact.id._serialized == participant.id._serialized) {
+        const contact = await client.getContactById(participant.id._serialized);
+
+        mentions.push(contact);
+        text += `@${participant.id.user} `;
+      }
+    }
+    target.push(contact.id._serialized);
+  }
+
+  await chat.promoteParticipants(target).then(async () => {
+    await chat
+      .sendMessage(text + 'telah di promosikan sebagai admin🥳', {mentions})
+      .then(async () => {
+        await message.react(pReaction.success);
+      })
+      .catch(async () => {
+        await onCommandStatus(client, message, 'failed');
+      });
+  });
+};
+
+//DEMOTE PARTICIPANT
+const adminDemote = async (client, message, chat) => {
+  const isGroup = await chat.isGroup;
+
+  await message.react(pReaction.loading);
+
+  if (!isGroup) {
+    return await send(
+      client,
+      message,
+      'Fitur ini hanya tersedia untuk grup!',
+    ).then(async () => {
+      await message.react(pReaction.info);
+    });
+  }
+
+  const isBot = await isBotAdmin(client, chat);
+  const isAuthorAdmin = await isAdmin(chat, message.author);
+  const mentioned = await message.getMentions();
+
+  if (!isAuthorAdmin) {
+    return await send(
+      client,
+      message,
+      'Fitur ini hanya bisa digunakan oleh admin grup!',
+    ).then(async () => {
+      await message.react(pReaction.info);
+    });
+  }
+
+  if (!isBot) {
+    return await send(
+      client,
+      message,
+      'Kamu harus menjadikan bot sebagai admin dulu untuk menggunakan fitur ini!',
+    ).then(async () => {
+      await message.react(pReaction.info);
+    });
+  }
+
+  if (!mentioned.length) {
+    return await send(
+      client,
+      message,
+      'Tidak ada kontak yang dimention. \n\nContoh : _!demote @namakontak_ atau _!demote @admin1 @admin2_',
+    ).then(async () => {
+      await message.react(pReaction.info);
+    });
+  }
+
+  let target = [];
+
+  let text = '';
+  let mentions = [];
+
+  for (let contact of mentioned) {
+    for (let participant of chat.participants) {
+      if (contact.id._serialized == participant.id._serialized) {
+        const contact = await client.getContactById(participant.id._serialized);
+
+        mentions.push(contact);
+        text += `@${participant.id.user} `;
+      }
+    }
+    target.push(contact.id._serialized);
+  }
+
+  await chat.demoteParticipants(target).then(async () => {
+    await chat
+      .sendMessage(text + 'bukan lagi admin grup ini😉', {mentions})
+      .then(async () => {
+        await message.react(pReaction.success);
+      })
+      .catch(async () => {
+        await onCommandStatus(client, message, 'failed');
+      });
+  });
+};
+
+//KICK PARTICIPANT
+const adminKick = async (client, message, chat) => {
+  const isGroup = await chat.isGroup;
+
+  await message.react(pReaction.loading);
+
+  if (!isGroup) {
+    return await send(
+      client,
+      message,
+      'Fitur ini hanya tersedia untuk grup!',
+    ).then(async () => {
+      await message.react(pReaction.info);
+    });
+  }
+
+  const isBot = await isBotAdmin(client, chat);
+  const isAuthorAdmin = await isAdmin(chat, message.author);
+  const mentioned = await message.getMentions();
+
+  if (!isAuthorAdmin) {
+    return await send(
+      client,
+      message,
+      'Fitur ini hanya bisa digunakan oleh admin grup!',
+    ).then(async () => {
+      await message.react(pReaction.info);
+    });
+  }
+
+  if (!isBot) {
+    return await send(
+      client,
+      message,
+      'Kamu harus menjadikan bot sebagai admin dulu untuk menggunakan fitur ini!',
+    ).then(async () => {
+      await message.react(pReaction.info);
+    });
+  }
+
+  if (!mentioned.length) {
+    return await send(
+      client,
+      message,
+      'Tidak ada kontak yang dimention. \n\nContoh : _!demote @namakontak_ atau _!demote @admin1 @admin2_',
+    ).then(async () => {
+      await message.react(pReaction.info);
+    });
+  }
+
+  let target = [];
+
+  let text = '';
+  let mentions = [];
+
+  for (let contact of mentioned) {
+    for (let participant of chat.participants) {
+      if (contact.id._serialized == participant.id._serialized) {
+        const contact = await client.getContactById(participant.id._serialized);
+
+        mentions.push(contact);
+        text += `@${participant.id.user} `;
+      }
+    }
+    target.push(contact.id._serialized);
+  }
+
+  await chat.removeParticipants(target).then(async () => {
+    await chat
+      .sendMessage(text + 'telah dikeluarkan dari grup oleh admin.', {mentions})
+      .then(async () => {
+        await message.react(pReaction.success);
+      })
+      .catch(async () => {
+        await onCommandStatus(client, message, 'failed');
+      });
   });
 };
 
@@ -990,10 +1285,10 @@ const pup = async (browser, client, message, value) => {
 // ======================
 
 //check if is admin
-const isAdmin = (message, chat) => {
-  const authorId = message.author;
+const isAdmin = (chat, id) => {
+  //const authorId = message.author;
   for (let participant of chat.participants) {
-    if (participant.id._serialized === authorId && participant.isAdmin) {
+    if (participant.id._serialized === id && participant.isAdmin) {
       return true;
       break;
     } else {
@@ -1002,16 +1297,31 @@ const isAdmin = (message, chat) => {
   }
 };
 
+//is bot admin
+//check if is admin
+const isBotAdmin = (client, chat) => {
+  const botChatObj = chat.participants.find(
+    chatObj => chatObj.id.user === client.info.wid.user,
+  );
+  if (botChatObj.isAdmin) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
 //on success command
-const onCommandStatus = async (client, message, status) => {
+const onCommandStatus = async (client, message, status, reactOnly) => {
   await message.react(
     status == 'success' ? pReaction.success : pReaction.failed,
   );
-  await send(
-    client,
-    message,
-    status == 'success' ? msg.success.norm : msg.error.norm,
-  );
+  if (!reactOnly) {
+    await send(
+      client,
+      message,
+      status == 'success' ? msg.success.norm : msg.error.norm,
+    );
+  }
 };
 
 module.exports = {
@@ -1046,4 +1356,8 @@ module.exports = {
   detectIfMention,
   quotaExceed,
   addUserPremium,
+  emojimix,
+  adminPromote,
+  adminDemote,
+  adminKick,
 };

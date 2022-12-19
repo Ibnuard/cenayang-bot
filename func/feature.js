@@ -35,7 +35,7 @@ const MENUS = [
       {
         id: 'faceswap',
         title: 'Faceswap',
-        description: 'Mengganti wajah dengan tokoh random',
+        description: 'Menukar wajah dengan orang lain',
       },
       {
         id: 'facetoon',
@@ -76,12 +76,27 @@ const MENUS = [
     ],
   },
   {
-    title: 'Fitur Grup',
+    title: 'Fitur Grup dan Admin',
     rows: [
       {
         id: 'antikasar',
         title: 'Antikasar',
         description: 'Filter kata kata kasar',
+      },
+      {
+        id: 'promote',
+        title: 'Promote',
+        description: 'Mempromosikan anggota sebagai admin',
+      },
+      {
+        id: 'demote',
+        title: 'Demote',
+        description: 'Menurunkan anggota sebagai admin',
+      },
+      {
+        id: 'kick',
+        title: 'Kick',
+        description: 'Menegeluarkan anggota dari grup',
       },
       {
         id: 'bye',
@@ -93,6 +108,11 @@ const MENUS = [
   {
     title: 'Fitur Lainnya',
     rows: [
+      {
+        id: 'mix',
+        title: 'Emojimix',
+        description: 'Mincampur 2 emoji',
+      },
       {
         id: 'ssweb',
         title: 'Screenshoot Website',
@@ -123,7 +143,10 @@ const listMenu = simbol => {
 
     for (let i = 0; i < arr.length; i++) {
       temp =
-        temp + `╔ _*${simbol}${arr[i].id}*_\n╚═► ${arr[i].description}\n\n`;
+        temp +
+        `${i == 0 ? '╔' : '╠'} _*${simbol}${arr[i].id}*_\n${
+          i == arr.length - 1 ? '╚' : '╠'
+        }► ${arr[i].description}\n${i == arr.length - 1 ? '' : '║'}\n`;
     }
 
     return temp;
