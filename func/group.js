@@ -200,7 +200,7 @@ const kataKasarAddRank = async message => {
   }
 };
 
-const kataKasarRank = async message => {
+const kataKasarRank = async (message, chat, client) => {
   const groupId = message.from;
   const path = `./database/temp/antikasar/${groupId}.json`;
 
@@ -225,7 +225,60 @@ const kataKasarRank = async message => {
         temp.push({id: list[0], point: list[1]});
       }
 
-      return temp;
+      const sorting = temp.sort(function (a, b) {
+        return b.point - a.point;
+      });
+
+      let text = '';
+      let mentions = [];
+
+      function _defineRank(point) {
+        const multiplePoin = point * 10;
+
+        if (multiplePoin < 10) {
+          return 'Kamu contoh anak baik!';
+        } else if (multiplePoin >= 10 && multiplePoin < 200) {
+          return 'Toxic Warrior';
+        } else if (multiplePoin >= 200 && multiplePoin < 300) {
+          return 'Toxic Elit';
+        } else if (multiplePoin >= 300 && multiplePoin < 400) {
+          return 'Toxic Grandmaster';
+        } else if (multiplePoin >= 400 && multiplePoin < 500) {
+          return 'Toxic Epical Glory';
+        } else if (multiplePoin >= 500 && multiplePoin < 600) {
+          return 'Toxic Legend';
+        } else if (multiplePoin >= 600 && multiplePoin < 700) {
+          return 'Toxic Mythic';
+        } else if (multiplePoin >= 200 && multiplePoin < 300) {
+          return 'Toxic Glori';
+        } else {
+          return 'Si paling jahanammmm...';
+        }
+      }
+
+      for (let contact of sorting) {
+        for (let participant of chat.participants) {
+          if (contact.id == participant.id._serialized) {
+            const serialize = await client.getContactById(
+              participant.id._serialized,
+            );
+
+            mentions.push(serialize);
+            text += `@${participant.id.user} ${_defineRank(contact.point)} ⭐️${
+              contact.point * 10
+            } pts \n`;
+          }
+        }
+      }
+
+      const prefix = 'Rank Si Paling Toxic\n\n';
+      const endfix =
+        '\nJangan spam kata kata toxic buat push rank ya adick adick.';
+
+      return {
+        message: prefix + text + endfix,
+        mention: mentions,
+      };
     }
   } catch (error) {
     console.log(error);

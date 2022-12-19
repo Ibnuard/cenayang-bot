@@ -554,9 +554,29 @@ const ingetin = async (client, message, value, extra) => {
 };
 
 //load data
-const antikasar = (client, message, value, chat) => {
+const antikasar = async (client, message, value, chat) => {
+  await message.react(pReaction.loading);
   if (chat.isGroup) {
     const admin = isAdmin(chat, message.author);
+
+    if (value == 'rank') {
+      const list = await group.kataKasarRank(message, chat, client);
+
+      if (list !== 'NO_DATA') {
+        const mentions = list.mention;
+
+        return await chat
+          .sendMessage(list.message, {
+            mentions,
+          })
+          .then(async () => {
+            await message.react(pReaction.success);
+          });
+      } else {
+        return await send(client, message, 'Belum ada yang ngomong kasar🌝');
+      }
+    }
+
     if (admin) {
       if (value) {
         if (value == 'on') {
@@ -595,7 +615,7 @@ const antikasar = (client, message, value, chat) => {
         send(
           client,
           message,
-          'Cara penggunaan : _!antikasar on_ untuk menyalakan fitur anti kasar atau _!antikasar off_ untuk mematikan fitur anti kasar.',
+          'Cara penggunaan : _!antikasar on_ untuk menyalakan fitur anti kasar atau _!antikasar off_ untuk mematikan fitur anti kasar. \n\nGunakan perintah _!antikasar rank_ untuk melihat ranking ke toxickan grup',
         ).then(async () => {
           await message.react(pReaction.info);
         });
