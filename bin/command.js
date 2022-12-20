@@ -11,6 +11,7 @@ const {
   user,
   group,
   scraper,
+  buatnotes,
 } = require('../func');
 const config = require('../config.json');
 const moment = require('moment');
@@ -1229,6 +1230,143 @@ const adminKick = async (client, message, chat) => {
   });
 };
 
+const notes = async (client, message, value, extra, chat) => {
+  await message.react(pReaction.loading);
+
+  let author = '';
+
+  if (chat.isGroup) {
+    author = `${message.from}#@${message.author}`;
+  } else {
+    author = message.from;
+  }
+
+  if (!value) {
+    return await send(
+      client,
+      message,
+      'Cara membuat catatan\n\n' +
+        'Gunakan perintah _!note buat <namaCatatan> <isi catatan>_ untuk membuat sebuah catatan. contoh : _!note rules ini rules grup_\n' +
+        '\nGunakan perintah _!note lihat <namaCatatan>_ untuk melihat isi catatan. contoh : _!note rules_\n' +
+        '\nGunakan perintah _!note hapus <namaCatatan>_ untuk menghapus catatan. contoh : _!note hapus rules_',
+    ).then(async () => {
+      await message.react(pReaction.info);
+    });
+  }
+
+  if (extra[0] == 'buat') {
+    const getNoteName = extra[1];
+    const getValue = extra.join(' ').replace(`${extra[0]} ${extra[1]} `, '');
+
+    const note = await buatnotes.createNote(author, getNoteName, getValue);
+
+    if (getValue.length) {
+      if (note == 'DATA_EXIST') {
+        await send(
+          client,
+          message,
+          'Catatan sudah ada. Gunakan perintah _!note lihat <namaCatatan>_ untuk melihat catatan yang dibuat.',
+        ).then(async () => {
+          await message.react(pReaction.info);
+        });
+      } else {
+        await send(
+          client,
+          message,
+          'Catatan berhasil dibuat. Gunakan perintah _!note lihat <namaCatatan>_ untuk melihat catatan yang dibuat.',
+        ).then(async () => {
+          await message.react(pReaction.success);
+        });
+      }
+    } else {
+      await send(
+        client,
+        message,
+        'Tidak ada isi catatan. Gunakan perintah _!note buat <namaCatatan> <isiCatatan>_ untuk membuat catatan.',
+      ).then(async () => {
+        await message.react(pReaction.info);
+      });
+    }
+  } else if (extra[0] == 'lihat') {
+    const note = await buatnotes.readNotes(author, extra[1]);
+
+    if (note == 'NOT_EXIST') {
+      await send(
+        client,
+        message,
+        'Tidak ada catatan dengan nama ' + extra[1],
+      ).then(async () => {
+        await message.react(pReaction.info);
+      });
+    } else if (note == 'NO_DATA') {
+      await send(client, message, 'Belum ada catatan dibuat').then(async () => {
+        await message.react(pReaction.info);
+      });
+    } else {
+      await send(client, message, 'Catatan kamu : \n\n' + note).then(
+        async () => {
+          await message.react(pReaction.success);
+        },
+      );
+    }
+  } else if (extra[0] == 'hapus') {
+    const note = await buatnotes.deleteNotes(author, extra[1]);
+
+    if (note == 'NOT_EXIST') {
+      await send(
+        client,
+        message,
+        'Tidak ada catatan dengan nama ' + extra[1],
+      ).then(async () => {
+        await message.react(pReaction.info);
+      });
+    } else if (note == 'NO_DATA') {
+      await send(client, message, 'Belum ada catatan dibuat.').then(
+        async () => {
+          await message.react(pReaction.info);
+        },
+      );
+    } else {
+      await send(client, message, 'Catatan berhasil dihapus.').then(
+        async () => {
+          await message.react(pReaction.success);
+        },
+      );
+    }
+  } else if (extra[0] == 'list') {
+    const note = await buatnotes.noteList(author);
+
+    if (note == 'NO_DATA') {
+      await send(client, message, 'Belum ada catatan dibuat.').then(
+        async () => {
+          await message.react(pReaction.info);
+        },
+      );
+    } else {
+      let list = '';
+      for (let catatan of note) {
+        list += `-> ${catatan.name}\n`;
+      }
+
+      const word = `Daftar Catatan Kamu : \n\n${list}\nGunakan perintah _!note lihat <namaCatatan>_ untuk melihat catatan.`;
+      await send(client, message, word).then(async () => {
+        await message.react(pReaction.success);
+      });
+    }
+  } else {
+    await send(
+      client,
+      message,
+      'Cara membuat catatan\n\n' +
+        'Gunakan perintah _!note buat <namaCatatan> <isi catatan>_ untuk membuat sebuah catatan. contoh : _!note rules ini rules grup_\n' +
+        '\nGunakan perintah _!note lihat <namaCatatan>_ untuk melihat isi catatan. contoh : _!note rules_\n' +
+        '\nGunakan perintah _!note hapus <namaCatatan>_ untuk menghapus catatan. contoh : _!note hapus rules_',
+    ).then(async () => {
+      await message.react(pReaction.info);
+    });
+  }
+};
+
 // =================================================
 //
 //
@@ -1380,4 +1518,5 @@ module.exports = {
   adminPromote,
   adminDemote,
   adminKick,
+  notes,
 };

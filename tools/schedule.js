@@ -29,9 +29,17 @@ const botTask = func => {
   });
 };
 
+//reminder cron
+const clientTask = func => {
+  return cron.schedule('0 0 */12 * * *', () => {
+    func();
+  });
+};
+
 module.exports = {
   groupTask,
   quotaTask,
   reminderTask,
   botTask,
+  clientTask,
 };

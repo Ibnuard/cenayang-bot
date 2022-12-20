@@ -18,7 +18,6 @@ moment.locale('id');
 //CLIENT INIT
 const client = new Client({
   authStrategy: new LocalAuth({
-    clientId: 'CENAYANGDEV',
     dataPath: './wa_auth/',
   }),
   puppeteer: {
@@ -105,4 +104,17 @@ client.on('incoming_call', async data => {
   }
 });
 
+//INITITLIAZE CLIENT
 client.initialize();
+
+//CLIENT TASK TO RE INITIALIZE EVERY MIDNIGHT
+job
+  .clientTask(async () => {
+    console.log('reinitialize');
+    await client.destroy();
+
+    setTimeout(() => {
+      client.initialize();
+    }, 5000);
+  })
+  .start();

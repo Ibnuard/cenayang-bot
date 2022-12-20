@@ -51,7 +51,7 @@ const onMessageReceived = async (client, message, browser) => {
   //IF USER PREMIUM OR HAVE QUOTAS
   if (isCanUse) {
     //HANDLING USER QUOTA / REQUEST
-    console.log('command -> ' + cmd);
+    console.log('command -> ' + cmd, ' value --> ' + value);
 
     switch (cmd) {
       case prefix + 'ping':
@@ -164,6 +164,9 @@ const onMessageReceived = async (client, message, browser) => {
         break;
       case prefix + 'kick':
         return command.adminKick(client, message, chat);
+        break;
+      case prefix + 'note':
+        return command.notes(client, message, value, extra_value, chat);
         break;
 
       // =========================================

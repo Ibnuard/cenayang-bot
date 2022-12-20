@@ -20,6 +20,9 @@ const getPathValue = dir => {
     case 'quota':
       return './database/user/quota.json'; //path.resolve(__dirname, '../database/group/premium.json');
       break;
+    case 'notes':
+      return './database/user/notes.json'; //path.resolve(__dirname, '../database/group/premium.json');
+      break;
     default:
       return null;
       break;

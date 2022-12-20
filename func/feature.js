@@ -50,13 +50,8 @@ const MENUS = [
     ],
   },
   {
-    title: 'Automation dan Kegunaan',
+    title: 'Downloader dan Tools',
     rows: [
-      {
-        id: 'ingetin',
-        title: 'Ingetin',
-        description: 'Membuat reminder atau pengingat',
-      },
       {
         id: 'dl',
         title: 'Download Social Media',
@@ -67,6 +62,21 @@ const MENUS = [
         id: 'ytmp3',
         title: 'Download Youtube MP3',
         description: 'Download dari youtube sebagai mp3',
+      },
+    ],
+  },
+  {
+    title: 'Automation dan Kegunaan',
+    rows: [
+      {
+        id: 'ingetin',
+        title: 'Ingetin',
+        description: 'Membuat reminder atau pengingat',
+      },
+      {
+        id: 'note',
+        title: 'Note',
+        description: 'Membuat catatan',
       },
       {
         id: 'nulis',
