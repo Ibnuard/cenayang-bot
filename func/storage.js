@@ -23,6 +23,9 @@ const getPathValue = dir => {
     case 'notes':
       return './database/user/notes.json'; //path.resolve(__dirname, '../database/group/premium.json');
       break;
+    case 'confess':
+      return './database/user/confess.json'; //path.resolve(__dirname, '../database/group/premium.json');
+      break;
     case 'crypto':
       return './database/reminder/crypto.json'; //path.resolve(__dirname, '../database/group/premium.json');
       break;
