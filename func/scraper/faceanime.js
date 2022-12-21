@@ -60,15 +60,11 @@ const anime = async (browser, image) => {
     await fileChooser.accept([path + filename]);
 
     await page.waitForNavigation();
-    await page.waitForSelector(
-      '#page-view > div._olympic-result-page_jnpgw_1 > div._result-page_jnpgw_93 > div._temp-container_jnpgw_19 > div > div > img',
-    );
+    await page.waitForSelector('div[class*="_temp-result-row"] > img');
 
     const data = await page.evaluate(async () => {
       return document
-        .querySelector(
-          '#page-view > div._olympic-result-page_jnpgw_1 > div._result-page_jnpgw_93 > div._temp-container_jnpgw_19 > div > div > img',
-        )
+        .querySelector('div[class*="_temp-result-row"] > img')
         .getAttribute('src');
     });
 
