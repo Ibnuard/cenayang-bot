@@ -2,14 +2,14 @@ const cron = require('node-cron');
 
 //group cron
 const groupTask = func => {
-  return cron.schedule('0 0 */12 * * *', () => {
+  return cron.schedule('0 0 0 * * *', () => {
     func();
   });
 };
 
 //group cron
 const quotaTask = func => {
-  return cron.schedule('0 0 */12 * * *', () => {
+  return cron.schedule('0 0 0 * * *', () => {
     func();
   });
 };
@@ -31,14 +31,14 @@ const cryptoTask = func => {
 //BOT JOB
 //reminder cron
 const botTask = func => {
-  return cron.schedule('0 0 */12 * * *', () => {
+  return cron.schedule('0 0 0 * * *', () => {
     func();
   });
 };
 
 //reminder cron
 const clientTask = func => {
-  return cron.schedule('0 0 */12 * * *', () => {
+  return cron.schedule('0 0 1 * * *', () => {
     func();
   });
 };
