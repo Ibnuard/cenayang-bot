@@ -29,32 +29,21 @@ const anime = async (browser, image) => {
   fs.writeFileSync(path + filename, Buffer.from(image, 'base64'));
 
   try {
-    const dialog =
-      (await page.$(
-        '#page-container > div > div._modal_f95ly_1 > div > div > div._confirm-btn_1fu81_42',
-      )) || '';
+    const dialog = (await page.$('div[class*="_confirm-btn"]')) || '';
 
     if (dialog) {
-      await page.waitForSelector(
-        '#page-container > div > div._modal_f95ly_1 > div > div > div._confirm-btn_1fu81_42',
-      );
+      await page.waitForSelector('div[class*="_confirm-btn"]');
 
-      await page.click(
-        '#page-container > div > div._modal_f95ly_1 > div > div > div._confirm-btn_1fu81_42',
-      );
+      await page.click('div[class*="_confirm-btn"]');
     }
 
-    await page.click('#page-container > div > div._action-panel_ewapq_64');
+    await page.click('div[class*="_action-panel"]');
 
-    await page.waitForSelector(
-      '#page-container > div > div._modal_f95ly_1 > div > div > div',
-    );
+    await page.waitForSelector('div[class*="_choose-actions"]');
 
     const [fileChooser] = await Promise.all([
       page.waitForFileChooser(),
-      page.click(
-        '#page-container > div > div._modal_f95ly_1 > div > div > div',
-      ),
+      page.click('div[class*="_choose-actions"]'),
     ]);
 
     await fileChooser.accept([path + filename]);
