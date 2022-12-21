@@ -168,6 +168,18 @@ const onMessageReceived = async (client, message, browser) => {
       case prefix + 'note':
         return command.notes(client, message, value, extra_value, chat);
         break;
+      case prefix + 'crypto':
+        return command.crypto(browser, client, message, value);
+        break;
+      case prefix + 'cryptoalert':
+        return command.cryptoAlert(
+          browser,
+          client,
+          message,
+          value,
+          extra_value,
+        );
+        break;
 
       // =========================================
       //

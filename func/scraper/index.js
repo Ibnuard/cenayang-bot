@@ -8,4 +8,5 @@ module.exports = {
   ...require('./nulis'),
   ...require('./gempa'),
   ...require('./emojimix'),
+  ...require('./crypto'),
 };

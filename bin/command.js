@@ -12,6 +12,7 @@ const {
   group,
   scraper,
   buatnotes,
+  cryptoalert,
 } = require('../func');
 const config = require('../config.json');
 const moment = require('moment');
@@ -1265,7 +1266,7 @@ const notes = async (client, message, value, extra, chat) => {
         await send(
           client,
           message,
-          'Catatan sudah ada. Gunakan perintah _!note lihat <namaCatatan>_ untuk melihat catatan yang dibuat.',
+          'Catatan sudah ada.\n\nGunakan perintah _!note lihat <namaCatatan>_ untuk melihat catatan yang dibuat.',
         ).then(async () => {
           await message.react(pReaction.info);
         });
@@ -1273,7 +1274,7 @@ const notes = async (client, message, value, extra, chat) => {
         await send(
           client,
           message,
-          'Catatan berhasil dibuat. Gunakan perintah _!note lihat <namaCatatan>_ untuk melihat catatan yang dibuat.',
+          'Catatan berhasil dibuat🤩\n\nGunakan perintah _!note lihat <namaCatatan>_ untuk melihat catatan yang dibuat.\n\nGunakan perintah _!note list_ untuk melihat daftar catatan yang dibuat.',
         ).then(async () => {
           await message.react(pReaction.success);
         });
@@ -1282,7 +1283,7 @@ const notes = async (client, message, value, extra, chat) => {
       await send(
         client,
         message,
-        'Tidak ada isi catatan. Gunakan perintah _!note buat <namaCatatan> <isiCatatan>_ untuk membuat catatan.',
+        'Tidak ada isi catatan.\n\nGunakan perintah _!note buat <namaCatatan> <isiCatatan>_ untuk membuat catatan.',
       ).then(async () => {
         await message.react(pReaction.info);
       });
@@ -1367,6 +1368,168 @@ const notes = async (client, message, value, extra, chat) => {
   }
 };
 
+//pup
+const crypto = async (browser, client, message, value) => {
+  await message.react(pReaction.loading);
+
+  if (!value) {
+    return await send(
+      client,
+      message,
+      'Cara penggunaan : _!crypto <kode crypto>_ contoh _!crypto ETH_',
+    ).then(async () => {
+      await message.react(pReaction.info);
+    });
+  }
+
+  const crypto = await scraper.crypto(browser, value);
+
+  if (crypto.status == '200') {
+    await send(
+      client,
+      message,
+      `*Update ${crypto.data.code}*` +
+        '\n\nNama : ' +
+        crypto.data?.name +
+        '/' +
+        crypto.data.code +
+        '\nHarga IDR : Rp ' +
+        crypto.data.price +
+        '\nHarga USDT : ' +
+        crypto.data.usdt +
+        ' USDT' +
+        '\n\nHarga tiap exchange pasti ada selisih ygy!',
+    )
+      .then(async () => {
+        await onCommandStatus(client, message, 'success');
+      })
+      .catch(async e => {
+        await onCommandStatus(client, message, 'error');
+      });
+  } else {
+    await onCommandStatus(client, message, 'error');
+  }
+};
+
+//pup
+const cryptoAlert = async (browser, client, message, value, extra) => {
+  await message.react(pReaction.loading);
+
+  if (!value) {
+    return await send(
+      client,
+      message,
+      'Cara penggunaan : \n\n_!cryptoalert ETH > 1280_ atau _!cryptoalert BTC < 12000_\n\nGunakan simbol < untuk kurang dari atau > untuk lebih dari harga yang kamu tentukan.\n\nBot akan mengirimkan pesan otomatis jika ada kondisi yang tercapai.',
+    ).then(async () => {
+      await message.react(pReaction.info);
+    });
+  }
+
+  if (value == 'list') {
+    const list = await cryptoalert.alertList(message);
+
+    if (list == 'NO_DATA') {
+      await send(client, message, 'Belum ada pengingat yang dibuat!').then(
+        async () => {
+          await message.react(pReaction.info);
+        },
+      );
+    } else {
+      await send(client, message, 'List Crypto Alert : \n' + list).then(
+        async () => {
+          await message.react(pReaction.success);
+        },
+      );
+    }
+  } else if (extra[0] == 'hapus') {
+    if (!extra[1].length) {
+      return await send(
+        client,
+        message,
+        'Cara menghapus alert : \n\n_!cryptoalert hapus <id>_\n\nid dapat dilihat melalui perintah _!cryptoalert list_. dengan kata id didepannya.',
+      ).then(async () => {
+        await message.react(pReaction.info);
+      });
+    }
+
+    const remove = await cryptoalert.deleteAlert(message.from, extra[1]);
+
+    if (remove == 'NO_DATA') {
+      await send(
+        client,
+        message,
+        'Tidak ada data dengan id : ' + extra[1],
+      ).then(async () => {
+        await message.react(pReaction.info);
+      });
+    } else {
+      await send(
+        client,
+        message,
+        `Pengingat ${extra[1]} berhasil dihapus.`,
+      ).then(async () => {
+        await message.react(pReaction.success);
+      });
+    }
+  } else {
+    const data = await cryptoalert.createAlert(browser, message, value);
+
+    if (data == 'CODE_ERROR') {
+      await send(
+        client,
+        message,
+        `Tidak ditemukan crypto dengan kode itu. Mohon periksa kembali!`,
+      ).then(async () => {
+        await message.react(pReaction.info);
+      });
+    } else if (data == 'FORMAT_ERROR') {
+      await send(
+        client,
+        message,
+        'Format perintah salah.\n\nCara penggunaan : \n\n_!cryptoalert ETH > 1280_ atau _!cryptoalert BTC < 12000_\n\nGunakan simbol < untuk kurang dari atau > untuk lebih dari harga yang kamu tentukan.\n\nBot akan mengirimkan pesan otomatis jika ada kondisi yang tercapai.',
+      ).then(async () => {
+        await message.react(pReaction.info);
+      });
+    } else {
+      await send(
+        client,
+        message,
+        `Pengingat berhasil dibuat untuk ${value}.\n\nBot akan mengirimkan pesan otomatis jika kondisi tercapai!`,
+      ).then(async () => {
+        await message.react(pReaction.info);
+      });
+    }
+  }
+
+  // const crypto = await scraper.crypto(browser, value);
+
+  // if (crypto.status == '200') {
+  //   await send(
+  //     client,
+  //     message,
+  //     `*Update ${crypto.data.code}*` +
+  //       '\n\nNama : ' +
+  //       crypto.data?.name +
+  //       '/' +
+  //       crypto.data.code +
+  //       '\nHarga IDR : Rp ' +
+  //       crypto.data.price +
+  //       '\nHarga USDT : ' +
+  //       crypto.data.usdt +
+  //       ' USDT' +
+  //       '\n\nHarga tiap exchange pasti ada selisih ygy!',
+  //   )
+  //     .then(async () => {
+  //       await onCommandStatus(client, message, 'success');
+  //     })
+  //     .catch(async e => {
+  //       await onCommandStatus(client, message, 'error');
+  //     });
+  // } else {
+  //   await onCommandStatus(client, message, 'error');
+  // }
+};
+
 // =================================================
 //
 //
@@ -1429,7 +1592,11 @@ const premiumList = (client, message) => {
 //pup
 const pup = async (browser, client, message, value) => {
   await message.react(pReaction.loading);
-  return menuTombol(client, message);
+  const usdt = await scraper.crypto(browser, 'USDT');
+
+  if (usdt.status == '200') {
+    await send(client, message, 'USDT : ' + usdt.data.usdt + '/usdt');
+  }
 };
 
 // ======================
@@ -1519,4 +1686,6 @@ module.exports = {
   adminDemote,
   adminKick,
   notes,
+  crypto,
+  cryptoAlert,
 };

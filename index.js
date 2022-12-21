@@ -9,7 +9,7 @@ const {
 const {job} = require('./tools');
 const moment = require('moment');
 const {checkReminderTime} = require('./func/reminder');
-const {user} = require('./func');
+const {user, cryptoalert} = require('./func');
 
 const config = require('./config.json');
 
@@ -69,6 +69,9 @@ client.on('ready', () => {
     .start();
 
   job.quotaTask(() => user.resetUserQuota()).start();
+  job
+    .cryptoTask(() => cryptoalert.checkPrice(client.pupBrowser, client))
+    .start();
 });
 
 //ON JOIN GROUP

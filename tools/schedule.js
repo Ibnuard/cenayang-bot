@@ -21,6 +21,13 @@ const reminderTask = func => {
   });
 };
 
+//crypto cron
+const cryptoTask = func => {
+  return cron.schedule('* * * * *', () => {
+    func();
+  });
+};
+
 //BOT JOB
 //reminder cron
 const botTask = func => {
@@ -42,4 +49,5 @@ module.exports = {
   reminderTask,
   botTask,
   clientTask,
+  cryptoTask,
 };

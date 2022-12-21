@@ -66,6 +66,21 @@ const MENUS = [
     ],
   },
   {
+    title: 'Crypto',
+    rows: [
+      {
+        id: 'crypto',
+        title: 'Crypto',
+        description: 'Menampilkan harga coin crypto',
+      },
+      {
+        id: 'cryptoalert',
+        title: 'Cryptoalert',
+        description: 'Bot mengirimkan sesuai dengan price alert',
+      },
+    ],
+  },
+  {
     title: 'Automation dan Kegunaan',
     rows: [
       {

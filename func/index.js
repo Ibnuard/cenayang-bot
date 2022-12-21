@@ -7,3 +7,4 @@ exports.imageManipulation = require('./image');
 exports.scraper = require('./scraper');
 exports.user = require('./user');
 exports.buatnotes = require('./note');
+exports.cryptoalert = require('./cryptoalert');
