@@ -125,9 +125,29 @@ const deleteAlert = async (author, id) => {
   }
 };
 
+const alertHasQuota = async message => {
+  const alertData = loadData('crypto');
+  const author = message.from;
+
+  if (alertData.length > 0) {
+    const find = alertData.filter((item, index) => {
+      return item.author == author;
+    });
+
+    if (find.length >= 5) {
+      return false;
+    } else {
+      return true;
+    }
+  } else {
+    return true;
+  }
+};
+
 module.exports = {
   createAlert,
   checkPrice,
   alertList,
   deleteAlert,
+  alertHasQuota,
 };

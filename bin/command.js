@@ -1414,6 +1414,15 @@ const crypto = async (browser, client, message, value) => {
 //pup
 const cryptoAlert = async (browser, client, message, value, extra) => {
   await message.react(pReaction.loading);
+  const isPremium = await user.checkIsUserPremium(message.from);
+  const chat = await message.getChat();
+  const isGroup = await chat.isGroup;
+
+  if (!isGroup) {
+    if (!isPremium) {
+      return premiumOnly(client, message);
+    }
+  }
 
   if (!value) {
     return await send(
@@ -1472,6 +1481,18 @@ const cryptoAlert = async (browser, client, message, value, extra) => {
       });
     }
   } else {
+    const hasQuota = await cryptoalert.alertHasQuota(message);
+
+    if (!hasQuota) {
+      return await send(
+        client,
+        message,
+        'Tiap user atau grup hanya boleh membuat 5 price alert!',
+      ).then(async () => {
+        await message.react(pReaction.info);
+      });
+    }
+
     const data = await cryptoalert.createAlert(browser, message, value);
 
     if (data == 'CODE_ERROR') {
