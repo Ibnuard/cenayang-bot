@@ -16,7 +16,7 @@ const {
 } = require('../func');
 const config = require('../config.json');
 const moment = require('moment');
-const {msg, pReaction, badwReaction} = require('./messages');
+const {msg, pReaction, badwReaction, botTermsCondition} = require('./messages');
 const katabot = require('../database/group/katabot.json');
 const {randomInt, generateQRCode} = require('../tools/utils');
 const {utils} = require('../tools');
@@ -45,6 +45,16 @@ const send = (client, message, reply, ops) => {
 //
 //
 // ==================================================
+
+//kirim TNC BOT
+const tncBot = async (client, message) => {
+  const list = botTermsCondition.join('\n\n');
+  const word = `Syarat Penggunaan CenayangBOT\n\n${list}\n\nGunakan BOT dengan bijak ya ges, jangan lupa donasi biar BOT nya tetep jalan hihi.`;
+  await message.react(pReaction.loading);
+  send(client, message, word).then(async () => {
+    await message.react(pReaction.success);
+  });
+};
 
 //kirim ping
 const ping = async (client, message) => {
@@ -558,9 +568,11 @@ const ingetin = async (client, message, value, extra) => {
 //load data
 const antikasar = async (client, message, value, chat) => {
   await message.react(pReaction.loading);
-  if (chat.isGroup) {
-    const admin = isAdmin(chat, message.author);
+  const admin = await isAdmin(message);
 
+  console.log('antikasar : ' + admin);
+
+  if (chat.isGroup) {
     if (value == 'rank') {
       const list = await group.kataKasarRank(message, chat, client);
 
@@ -579,54 +591,54 @@ const antikasar = async (client, message, value, chat) => {
       }
     }
 
-    if (admin) {
-      if (value) {
-        if (value == 'on') {
-          const result = group.antiKasarOn(message.from);
-          if (result == 'ADDED') {
-            send(client, message, 'Fitur Anti Kasar *ON*').then(async () => {
-              await message.react(pReaction.success);
-            });
-          } else {
-            send(
-              client,
-              message,
-              'Fitur Anti Kasar memang sudah nyala ege!!!',
-            ).then(async () => {
-              await message.react(pReaction.info);
-            });
-          }
-        } else {
-          const result = group.antiKasarOff(message.from);
+    if (!admin) {
+      return send(
+        client,
+        message,
+        'Fitur ini hanya bisa digunakan oleh admin grup!',
+      ).then(async () => {
+        await message.react(pReaction.info);
+      });
+    }
 
-          if (result == 'REMOVED') {
-            send(client, message, 'Fitur Anti Kasar *OFF*').then(async () => {
-              await message.react(pReaction.success);
-            });
-          } else {
-            send(
-              client,
-              message,
-              'Fitur Anti Kasar memang belum nyala ege!!!',
-            ).then(async () => {
-              await message.react(pReaction.info);
-            });
-          }
+    if (value) {
+      if (value == 'on') {
+        const result = group.antiKasarOn(message.from);
+        if (result == 'ADDED') {
+          send(client, message, 'Fitur Anti Kasar *ON*').then(async () => {
+            await message.react(pReaction.success);
+          });
+        } else {
+          send(
+            client,
+            message,
+            'Fitur Anti Kasar memang sudah nyala ege!!!',
+          ).then(async () => {
+            await message.react(pReaction.info);
+          });
         }
       } else {
-        send(
-          client,
-          message,
-          'Cara penggunaan : _!antikasar on_ untuk menyalakan fitur anti kasar atau _!antikasar off_ untuk mematikan fitur anti kasar. \n\nGunakan perintah _!antikasar rank_ untuk melihat ranking ke toxickan grup',
-        ).then(async () => {
-          await message.react(pReaction.info);
-        });
+        const result = group.antiKasarOff(message.from);
+
+        if (result == 'REMOVED') {
+          send(client, message, 'Fitur Anti Kasar *OFF*').then(async () => {
+            await message.react(pReaction.success);
+          });
+        } else {
+          send(
+            client,
+            message,
+            'Fitur Anti Kasar memang belum nyala ege!!!',
+          ).then(async () => {
+            await message.react(pReaction.info);
+          });
+        }
       }
     } else {
       send(
         client,
         message,
-        'Fitur ini hanya bisa digunakan oleh admin grup!',
+        'Cara penggunaan : _!antikasar on_ untuk menyalakan fitur anti kasar atau _!antikasar off_ untuk mematikan fitur anti kasar. \n\nGunakan perintah _!antikasar rank_ untuk melihat ranking ke toxickan grup',
       ).then(async () => {
         await message.react(pReaction.info);
       });
@@ -650,8 +662,8 @@ const badWord = (client, message) => {
 //load data
 const warnBye = async (client, message, value, chat) => {
   if (chat.isGroup) {
-    const admin = isAdmin(chat, message.author);
-    if (admin) {
+    const admin = await isAdmin(message);
+    if (admin == true) {
       await send(
         client,
         message,
@@ -680,8 +692,8 @@ const warnBye = async (client, message, value, chat) => {
 //load data
 const bye = async (client, message, value, chat) => {
   if (chat.isGroup) {
-    const admin = isAdmin(chat, message.author);
-    if (admin) {
+    const admin = await isAdmin(message);
+    if (admin == true) {
       await send(
         client,
         message,
@@ -1011,10 +1023,10 @@ const adminPromote = async (client, message, chat) => {
   }
 
   const isBot = await isBotAdmin(client, chat);
-  const isAuthorAdmin = await isAdmin(chat, message.author);
+  const isAuthorAdmin = await isAdmin(message);
   const mentioned = await message.getMentions();
 
-  if (!isAuthorAdmin) {
+  if (isAuthorAdmin == false) {
     return await send(
       client,
       message,
@@ -1090,10 +1102,10 @@ const adminDemote = async (client, message, chat) => {
   }
 
   const isBot = await isBotAdmin(client, chat);
-  const isAuthorAdmin = await isAdmin(chat, message.author);
+  const isAuthorAdmin = await isAdmin(message);
   const mentioned = await message.getMentions();
 
-  if (!isAuthorAdmin) {
+  if (isAuthorAdmin == false) {
     return await send(
       client,
       message,
@@ -1169,10 +1181,10 @@ const adminKick = async (client, message, chat) => {
   }
 
   const isBot = await isBotAdmin(client, chat);
-  const isAuthorAdmin = await isAdmin(chat, message.author);
+  const isAuthorAdmin = await isAdmin(message);
   const mentioned = await message.getMentions();
 
-  if (!isAuthorAdmin) {
+  if (isAuthorAdmin == false) {
     return await send(
       client,
       message,
@@ -1613,10 +1625,12 @@ const premiumList = (client, message) => {
 //pup
 const pup = async (browser, client, message, value) => {
   await message.react(pReaction.loading);
-  const usdt = await scraper.crypto(browser, 'USDT');
 
-  if (usdt.status == '200') {
-    await send(client, message, 'USDT : ' + usdt.data.usdt + '/usdt');
+  const admin = await isAdmin(message);
+  if (admin == true) {
+    console.log('admin');
+  } else {
+    console.log('not admin');
   }
 };
 
@@ -1631,14 +1645,18 @@ const pup = async (browser, client, message, value) => {
 // ======================
 
 //check if is admin
-const isAdmin = (chat, id) => {
-  //const authorId = message.author;
-  for (let participant of chat.participants) {
-    if (participant.id._serialized === id && participant.isAdmin) {
-      return true;
-      break;
-    } else {
-      return false;
+const isAdmin = async message => {
+  let chat = await message.getChat();
+  if (chat.isGroup) {
+    const authorId = message.author;
+    for (let participant of chat.participants) {
+      if (participant.id._serialized === authorId && !participant.isAdmin) {
+        return false;
+        break;
+      } else {
+        return true;
+        break;
+      }
     }
   }
 };
@@ -1709,4 +1727,5 @@ module.exports = {
   notes,
   crypto,
   cryptoAlert,
+  tncBot,
 };

@@ -54,6 +54,10 @@ const onMessageReceived = async (client, message, browser) => {
     console.log('command -> ' + cmd, ' value --> ' + value);
 
     switch (cmd) {
+      case prefix + 'terms':
+        await user.addUserCommandCount(message.from, chat);
+        return command.tncBot(client, message);
+        break;
       case prefix + 'ping':
         await user.addUserCommandCount(message.from, chat);
         return command.ping(client, message);

@@ -22,9 +22,12 @@ const client = new Client({
   }),
   puppeteer: {
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    executablePath: '/usr/bin/google-chrome-stable',
+    executablePath:
+      'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+    // executablePath: '/usr/bin/google-chrome-stable',
   },
-  ffmpegPath: '/usr/bin/ffmpeg',
+  // ffmpegPath: '/usr/bin/ffmpeg',
+  ffmpegPath: './ffmpeg/bin/ffmpeg.exe',
 });
 
 //GENERATE QR

@@ -24,6 +24,11 @@ const badwArr = [
   'Kamu kesepian Ya?',
   'Kamu jomblo ya, bicaranya jelek!',
   'Husttttt... Bicara yang cantik!',
+  'Ya lambe mu cuk dijaga!',
+  'Sayang ga boleh ngomong kasar ya!',
+  'Husttt bocil bocil toxic!',
+  'Inget ibumu dirumah nak!',
+  'Ibumu masih sayang kamu?',
 ];
 
 const msg = {
@@ -45,6 +50,15 @@ const msg = {
   reaction: rand(badwArr),
 };
 
+const botTermsCondition = [
+  '1. Bot tidak akan menyimpan media atau chat yang kalian kirimkan',
+  '2. Owner bot tidak akan mengetahui chat yang kalian kirimkan',
+  '3. Bot berjalan di server tanpa perangkat',
+  '4. Bot tidak akan bertanggungjawab dengan apa yang dikirimkan',
+  '5. Bot akan di reset setiap jam 1 pagi',
+  '6. *Bot akan selalu aktif jika donasi kalian lancar hehe*',
+];
+
 const pReaction = {
   loading: '⏳',
   success: '👌',
@@ -60,4 +74,5 @@ module.exports = {
   msg,
   pReaction,
   badwReaction,
+  botTermsCondition,
 };

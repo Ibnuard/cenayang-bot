@@ -1,5 +1,15 @@
 const MENUS = [
   {
+    title: 'Syarat dan Ketentuan BOT',
+    rows: [
+      {
+        id: 'terms',
+        title: 'Terms',
+        description: 'Syarat dan ketentuan penggunaan BOT',
+      },
+    ],
+  },
+  {
     title: 'Informasi Bot',
     rows: [
       {
