@@ -47,8 +47,8 @@ const isUserQuotaAvailable = async (id, chat) => {
         return item == id;
       });
 
-      //SET QUOTA TO 29 REQUEST/DAY
-      if (find.length > 29) {
+      //SET QUOTA TO 10 REQUEST/DAY
+      if (find.length > 10) {
         return false;
       } else {
         return true;

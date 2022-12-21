@@ -980,7 +980,7 @@ const detectIfMention = async (prefix, message) => {
 const quotaExceed = async (client, message) => {
   const word =
     'Maaf kesempatan kamu hari ini sudah habis buat pake bot ini.' +
-    '\nKamu punya 30 kesempatan / hari untuk menggunakan fitur bot ini' +
+    '\nKamu punya 10 kesempatan / hari untuk menggunakan fitur bot ini' +
     '\n\nKesempatan akan di reset setiap jam 12 malam' +
     '\n\nDaftar menjadi premium dengan cara donasi minimal 20k untuk mendapatkan semua fitur bot tanpa batasan tiap hari.';
   await send(client, message, word).then(async () => {
